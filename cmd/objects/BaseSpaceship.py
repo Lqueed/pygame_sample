@@ -1,13 +1,15 @@
 from cmd.helpers.ObjectHelper import rot_center
+from cmd.objects.ObjectPositions import ObjectPositions
 import pygame
 import math
 
 
 class BaseSpaceship:
-    def __init__(self, screen, img: str = None):
+    def __init__(self, screen, object_positions: ObjectPositions, img: str = None):
         self.screen = screen
         self.img = pygame.image.load(img)
         self.orientation = 0
+        self.object_positions = object_positions
 
     def set_ship_img(self, img: str = None):
         self.img = pygame.image.load(img)
