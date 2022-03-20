@@ -26,7 +26,7 @@ class BaseMob(BaseSpaceship, BaseTileBackground):
 
         self.future_move_orientation = None
 
-    def spawn(self, spawn_coords):
+    def spawn(self, spawn_coords: tuple = (0, 0)):
         pass
 
     def spawn_random(self):

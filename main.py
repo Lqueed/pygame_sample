@@ -2,7 +2,7 @@ import pygame
 from cmd.objects.Player import Player
 from cmd.objects.BaseMob import BaseMob
 from cmd.background.TileBackground import TileBackground
-from cmd.helpers.KeyHelper import detect_player_move
+from cmd.helpers.KeyHelper import detect_player_move, detect_player_rotate
 
 display_size = (1024, 1024)
 pygame.init()
@@ -26,8 +26,15 @@ while run:
             run = False
 
     keys = pygame.key.get_pressed()
-    delta_x, delta_y, changed, left, right, up, down = detect_player_move(keys, bg, speed)
-    player.get_set_orientation(delta_x, delta_y, changed)
+
+    # передвижение верх-низ-лево-право
+    # delta_x, delta_y, changed, left, right, up, down = detect_player_move(keys, speed)
+    # player.get_set_orientation(delta_x, delta_y, changed)
+
+    # передвижение поворот + вперед-назад
+    move_speed, left, right = detect_player_rotate(keys, speed)
+    left, right, up, down = player.get_set_rotation(move_speed, left, right)
+
     bg.move(left, right, up, down)
     mob.move(left, right, up, down)
     mob.move_random()

@@ -1,5 +1,6 @@
 from cmd.helpers.ObjectHelper import rot_center
 import pygame
+import math
 
 
 class BaseSpaceship:
@@ -39,3 +40,35 @@ class BaseSpaceship:
     def get_set_orientation(self, delta_x: int = 0, delta_y: int = 0, changed: bool = False):
         orientation = BaseSpaceship.get_orientation(delta_x, delta_y, changed)
         self.set_orientation(orientation)
+
+    def get_set_rotation(self, speed, left, right):
+        if left:
+            self.orientation += 2
+        elif right:
+            self.orientation -= 2
+
+        if self.orientation >= 360:
+            self.orientation = 0
+        elif self.orientation <= 0:
+            self.orientation = 360
+
+        speed_x = 0
+        speed_y = 0
+        left = 0
+        right = 0
+        up = 0
+        down = 0
+        if speed:
+            speed_x = int(math.sin(self.orientation * 0.017) * speed)
+            speed_y = int(math.cos(self.orientation * 0.017) * speed)
+
+        if speed_x > 0:
+            left = abs(speed_x)
+        elif speed_x < 0:
+            right = abs(speed_x)
+        if speed_y > 0:
+            up = abs(speed_y)
+        elif speed_y < 0:
+            down = abs(speed_y)
+
+        return left, right, up, down

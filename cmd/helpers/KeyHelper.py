@@ -1,7 +1,7 @@
 import pygame
 
 
-def detect_player_move(keys, bg, speed: int = 10):
+def detect_player_move(keys, speed: int = 10):
     delta_x = 0
     delta_y = 0
     changed = False
@@ -40,3 +40,20 @@ def detect_player_move(keys, bg, speed: int = 10):
         changed = True
 
     return delta_x, delta_y, changed, left, right, up, down
+
+
+def detect_player_rotate(keys, speed: int = 10):
+    left = None
+    right = None
+
+    speed_input = 0
+    if keys[pygame.K_UP]:
+        speed_input = speed
+    if keys[pygame.K_LEFT]:
+        left = True
+    if keys[pygame.K_RIGHT]:
+        right = True
+    if keys[pygame.K_DOWN]:
+        speed_input = -speed
+
+    return speed_input, left, right
