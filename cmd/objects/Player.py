@@ -3,6 +3,9 @@ from BaseSpaceship import BaseSpaceship
 
 
 class Player(BaseSpaceship):
+    """
+    Класс корабля игрока.
+    """
     def __init__(self, screen, object_positions, img):
         super().__init__(screen, object_positions, img)
         self.object_positions.set_position('player', 512, 512)

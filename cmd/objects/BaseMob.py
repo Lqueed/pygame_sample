@@ -6,6 +6,10 @@ import pygame
 
 
 class BaseMob(BaseSpaceship, BaseTileBackground):
+    """
+    Базовый класс для всех мобов - хранит состояние, координаты и id
+    Наследуется в т.ч. от фона - для расчета движения мобов вместе с фоном
+    """
     def __init__(self,
                  screen,
                  img,
@@ -39,30 +43,43 @@ class BaseMob(BaseSpaceship, BaseTileBackground):
         self.future_move_orientation = None
 
     def spawn(self, spawn_coords: tuple = (0, 0)):
+        """
+        Потом тут будет логика спавна корабля по триггеру
+        """
         pass
 
     def spawn_random(self):
-        self.pos_x = random.randint(0, 512)
-        self.pos_y = random.randint(0, 512)
+        """
+        спавним в рандомно пределах блока 1024х1024 от ЛВУ (пока что) - потом будем спавнить за пределами экрана
+        """
+        self.pos_x = random.randint(0, 1024)
+        self.pos_y = random.randint(0, 1024)
         self.abs_pos_x = self.pos_x
         self.abs_pos_y = self.pos_y
 
     def draw(self):
         pos_x = self.abs_pos_x
         pos_y = self.abs_pos_y
+        ###
+        debugimg, new_rects = rot_center(self.debugimg, self.orientation, self.pos_x-20, self.pos_y-24)  # DEBUG
+        self.screen.blit(debugimg, (pos_x, pos_y))  # DEBUG
+        ###
         ship_image, new_rect = rot_center(self.img, self.orientation, self.pos_x-20, self.pos_y-24)
-        debugimg, new_rects = rot_center(self.debugimg, self.orientation, self.pos_x-20, self.pos_y-24)
-        self.screen.blit(debugimg, (pos_x, pos_y))
         self.screen.blit(ship_image, (pos_x, pos_y))
 
     def move_random(self):
+        """
+        Движение корабля в рандомных направлениях
+        """
         if self.is_destroyed:
+            # таймер до полного удаления
             self.destroy_count += 1
         else:
             if self.sleep_frames_count:
                 self.sleep_frames_count -= 1
 
             elif self.random_moving:
+                # если в движении - двигаем
                 if self.future_move_orientation is not None:
                     self.set_orientation(self.future_move_orientation)
                 self.drift_frames_count += 1
@@ -75,6 +92,7 @@ class BaseMob(BaseSpaceship, BaseTileBackground):
                     self.drift_frames_count = 0
 
             else:
+                # если не в движении - считаем куда двигать
                 self.drift_frames_limit = random.randint(30, 120)
                 self.sleep_frames_count = random.randint(30, 150)
                 delta_x = random.randint(-1, 1)
@@ -121,9 +139,15 @@ class BaseMob(BaseSpaceship, BaseTileBackground):
         self.object_positions.set_position('mob', self.abs_pos_x, self.abs_pos_y, self.mob_id)
 
     def set_future_orientation(self, delta_x, delta_y, changed):
+        """
+        Направить нос корабля в ту сторону, в которую он потом полетит
+        """
         self.future_move_orientation = self.get_orientation(-delta_x, -delta_y, changed)
 
     def destroy_ship(self, img):
+        """
+        Запускает таймер до уничтожения корабля и меняет спрайт корабля на спрайт взрыва
+        """
         self.set_ship_img(img)
         self.is_destroyed = True
         self.object_positions.del_object('mob', self.mob_id)

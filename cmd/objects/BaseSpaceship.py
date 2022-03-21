@@ -5,6 +5,9 @@ import math
 
 
 class BaseSpaceship:
+    """
+    Базовый класс для всех подвижных кораблей - набор методов для всех кораблей
+    """
     def __init__(self, screen, object_positions: ObjectPositions, img: str = None):
         self.screen = screen
         self.img = pygame.image.load(img)

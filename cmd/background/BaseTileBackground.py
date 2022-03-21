@@ -2,6 +2,10 @@ import pygame
 
 
 class BaseTileBackground:
+    """
+    Базовый класс фона - хранит положение фона относительно игрока и мету фоновой картинки
+    Содержит методы для движения фона, заполнения экрана тайлами и отрисовки фона
+    """
     def __init__(self, screen, img: str = None):
         self.tile_img = pygame.image.load(img)
         self.screen = screen
@@ -12,6 +16,9 @@ class BaseTileBackground:
         self.resolution = (1024, 1024)  # пока хардкод
 
     def set_position(self, pos_x, pos_y):
+        """
+        Задаем позицию для лву фона
+        """
         self.abs_pos_x = pos_x
         if pos_x >= self.resolution[0] or pos_x <= -self.resolution[0]:
             self.pos_x = 0
@@ -28,6 +35,9 @@ class BaseTileBackground:
         return self.pos_x, self.pos_y
 
     def draw(self):
+        """
+        Отрисовываем тайлы (центральный + в тех местах где экран не заполнен фоном)
+        """
         self.screen.blit(self.tile_img, (self.pos_x, self.pos_y))
         if abs(self.pos_x) >= self.resolution[0]:
             self.pos_x = 0
@@ -47,6 +57,9 @@ class BaseTileBackground:
 
     @staticmethod
     def get_direction(pos):
+        """
+        метод-помощник, нужен только для фона
+        """
         if pos > 0:
             return -1
         elif pos < 0:
@@ -59,6 +72,9 @@ class BaseTileBackground:
              right=None,
              up=None,
              down=None):
+        """
+        Двигаем фон в зависимости от псевдодвижения игрока
+        """
         if left:
             self.abs_pos_x += left
             self.pos_x += left

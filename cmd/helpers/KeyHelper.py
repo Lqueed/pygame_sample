@@ -1,7 +1,11 @@
 import pygame
 
 
+# Класс помощник для работы с нажатиями на кнопки
 def detect_player_move(keys, speed: int = 10):
+    """
+    дискретно - вверх вниз влево вправо
+    """
     delta_x = 0
     delta_y = 0
     changed = False
@@ -43,6 +47,9 @@ def detect_player_move(keys, speed: int = 10):
 
 
 def detect_player_rotate(keys, speed: int = 10):
+    """
+    повороты и вперед-назад
+    """
     left = None
     right = None
 
@@ -60,6 +67,9 @@ def detect_player_rotate(keys, speed: int = 10):
 
 
 def detect_shoot(keys):
+    """
+    пиу пиу
+    """
     shoot = False
     if keys[pygame.K_SPACE]:
         shoot = True

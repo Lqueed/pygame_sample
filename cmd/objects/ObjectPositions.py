@@ -5,12 +5,16 @@ import uuid
 
 
 class ObjectPositions:
+    """
+    Общий класс для хранения объектов мобов, выстрелов и тд
+    Все методы по движению и взаимодействию объектов вызываем через этот класс
+    """
     def __init__(self, screen):
         self.player = ()
         self.mobs = {}
         self.shots = {}
-        self.player_x_size = 20
-        self.player_y_size = 20
+        self.player_x_size = 20  # mock
+        self.player_y_size = 20  # mock
         self.screen = screen
 
     def set_position(self, object_type, pos_x, pos_y, mob_id=0):
@@ -20,6 +24,9 @@ class ObjectPositions:
             self.mobs[mob_id] = (pos_x, pos_y)
 
     def del_object(self, object_type, obj_id):
+        """
+        Уничтожить объект
+        """
         if object_type == 'mob':
             self.mobs.pop(obj_id, None)
 
@@ -68,6 +75,9 @@ class ObjectPositions:
             mob.draw()
 
     def find_collisions(self):
+        """
+        Ищет пересечения хитбоксов выстрелов, мобов и игрока
+        """
         mobs = self.detect_collisions_pl()
         mobs += self.detect_collisions_shots()
         for m_id in mobs:
@@ -76,6 +86,9 @@ class ObjectPositions:
         self.destroy_timer()
 
     def destroy_timer(self):
+        """
+        Таймер до уничтожения объекта - пока показываем спрайт взрыва
+        """
         to_delete = []
         for m_id in self.mobs:
             if self.mobs[m_id].destroy_count >= 60:
@@ -84,6 +97,9 @@ class ObjectPositions:
             self.mobs.pop(m_id, None)
 
     def detect_collisions_pl(self):
+        """
+        Ищем столкновения мобов с игроком
+        """
         collided = []
         for mob_id, coords in self.mobs.items():
             if (coords[0] <= self.player[0] + self.player_x_size and \
@@ -94,6 +110,9 @@ class ObjectPositions:
         return collided
 
     def detect_collisions_shots(self):
+        """
+        Ищем столкновения мобов с выстрелами
+        """
         collided = []
         shot_to_del = []
         for shot_id, shot_data in self.shots.items():

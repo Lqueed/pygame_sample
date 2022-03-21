@@ -3,6 +3,9 @@ import math
 
 
 class BaseShot:
+    """
+    Базовый класс для выстрелов - хранит состояние, координаты, угол, скорость и id
+    """
     def __init__(self, id, object_positions, img, angle, pos_x, pos_y, screen):
         self.id = id
         self.object_positions = object_positions
@@ -15,6 +18,9 @@ class BaseShot:
         self.age = 0
 
     def move(self):
+        """
+        Летит строго туда куда запустили, храним угол и скорость
+        """
         speed_x = int(math.sin(self.angle * 0.017) * self.speed)
         speed_y = int(math.cos(self.angle * 0.017) * self.speed)
 

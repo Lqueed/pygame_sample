@@ -1,9 +1,14 @@
 import pygame
 from cmd.objects.Player import Player
-from cmd.objects.BaseMob import BaseMob
 from cmd.objects.ObjectPositions import ObjectPositions
 from cmd.background.TileBackground import TileBackground
-from cmd.helpers.KeyHelper import detect_player_move, detect_player_rotate, detect_shoot
+from cmd.helpers.KeyHelper import detect_player_rotate, detect_shoot
+
+"""
+Все методы содержащие в названии draw - отрисовывают объекты на экране
+Все методы содержащие в названии move - просчитывают передвижение объектов
+"""
+
 
 # константы и объект игры
 display_size = (1024, 1024)
@@ -44,10 +49,6 @@ while run:
 
     # считываем нажатия клавиш
     keys = pygame.key.get_pressed()
-
-    # передвижение верх-низ-лево-право
-    # delta_x, delta_y, changed, left, right, up, down = detect_player_move(keys, speed)
-    # player.get_set_orientation(delta_x, delta_y, changed)
 
     # передвижение поворот + вперед-назад - определяем по кнопкам
     move_speed, left, right = detect_player_rotate(keys, speed)
