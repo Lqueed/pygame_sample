@@ -42,6 +42,10 @@ class BaseMob(BaseSpaceship, BaseTileBackground):
 
         self.future_move_orientation = None
 
+    def set_position(self, pos_x, pos_y):
+        self.pos_x = pos_x
+        self.pos_y = pos_y
+
     def spawn(self, spawn_coords: tuple = (0, 0)):
         """
         Потом тут будет логика спавна корабля по триггеру

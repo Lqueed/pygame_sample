@@ -1,5 +1,4 @@
 from cmd.helpers.ObjectHelper import rot_center
-from cmd.objects.ObjectPositions import ObjectPositions
 import pygame
 import math
 
@@ -8,7 +7,7 @@ class BaseSpaceship:
     """
     Базовый класс для всех подвижных кораблей - набор методов для всех кораблей
     """
-    def __init__(self, screen, object_positions: ObjectPositions, img: str = None):
+    def __init__(self, screen, object_positions, img: str = None):
         self.screen = screen
         self.img = pygame.image.load(img)
         self.orientation = 0

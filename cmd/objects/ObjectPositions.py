@@ -10,7 +10,7 @@ class ObjectPositions:
     Все методы по движению и взаимодействию объектов вызываем через этот класс
     """
     def __init__(self, screen):
-        self.player = ()
+        self.player = ()  # тут храним координаты
         self.mobs = {}
         self.shots = {}
         self.player_x_size = 20  # mock
@@ -21,7 +21,7 @@ class ObjectPositions:
         if object_type == 'player':
             self.player = (pos_x, pos_y)
         if object_type == 'mob':
-            self.mobs[mob_id] = (pos_x, pos_y)
+            self.mobs[mob_id].set_position(pos_x, pos_y)
 
     def del_object(self, object_type, obj_id):
         """
@@ -102,10 +102,10 @@ class ObjectPositions:
         """
         collided = []
         for mob_id, coords in self.mobs.items():
-            if (coords[0] <= self.player[0] + self.player_x_size and \
-                coords[0] >= self.player[0] - self.player_x_size)\
-                and (coords[1] <= self.player[1] + self.player_y_size and \
-                     coords[1] >= self.player[1] - self.player_y_size):
+            if (coords.pos_x <= self.player[0] + self.player_x_size and \
+                coords.pos_x >= self.player[0] - self.player_x_size)\
+                and (coords.pos_y <= self.player[1] + self.player_y_size and \
+                     coords.pos_y >= self.player[1] - self.player_y_size):
                 collided.append(mob_id)
         return collided
 
@@ -117,10 +117,10 @@ class ObjectPositions:
         shot_to_del = []
         for shot_id, shot_data in self.shots.items():
             for mob_id, coords in self.mobs.items():
-                if (abs(shot_data.pos_x) <= coords[0] + self.player_x_size and \
-                    abs(shot_data.pos_x) >= coords[0] - self.player_x_size)\
-                    and (abs(shot_data.pos_y) <= coords[1] + self.player_y_size and \
-                         abs(shot_data.pos_y) >= coords[1] - self.player_y_size):
+                if (abs(shot_data.pos_x) <= coords.pos_x + self.player_x_size and \
+                    abs(shot_data.pos_x) >= coords.pos_x - self.player_x_size)\
+                    and (abs(shot_data.pos_y) <= coords.pos_y + self.player_y_size and \
+                         abs(shot_data.pos_y) >= coords.pos_y - self.player_y_size):
                     collided.append(mob_id)
                     shot_to_del.append(shot_id)
         for shot_id in shot_to_del:

@@ -69,15 +69,15 @@ while run:
     # двигаем фон
     bg.move(left, right, up, down)
 
+    # сначала всегда отрисовываем фон, потом сверху все остальное
+    bg.draw()
+
     # двигаем мобов и выстрелы
     object_positions.move_mobs(left, right, up, down)
     object_positions.move_shots()
 
     # ищем пересечения хитбоксов мобов с игроком и выстрелами
     object_positions.find_collisions()
-
-    # сначала всегда отрисовываем фон, потом сверху все остальное
-    bg.draw()
 
     # отрисовываем игрока и мобов
     object_positions.draw_mobs()
