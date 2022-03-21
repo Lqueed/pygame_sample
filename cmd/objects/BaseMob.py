@@ -1,15 +1,15 @@
 from cmd.helpers.ObjectHelper import rot_center
 from BaseSpaceship import BaseSpaceship
 from cmd.background.BaseTileBackground import BaseTileBackground
-from cmd.objects.ObjectPositions import ObjectPositions
 import random
+import pygame
 
 
 class BaseMob(BaseSpaceship, BaseTileBackground):
     def __init__(self,
                  screen,
                  img,
-                 object_positions: ObjectPositions,
+                 object_positions,
                  mob_id=0,
                  spawn_coords=(),
                  aggressive=True):
@@ -20,6 +20,7 @@ class BaseMob(BaseSpaceship, BaseTileBackground):
         self.abs_pos_x = 0
         self.abs_pos_y = 0
         self.mob_id = mob_id
+        self.debugimg = pygame.image.load("png/debug.png")
 
         self.is_destroyed = False
         self.destroy_count = 0
@@ -50,6 +51,8 @@ class BaseMob(BaseSpaceship, BaseTileBackground):
         pos_x = self.abs_pos_x
         pos_y = self.abs_pos_y
         ship_image, new_rect = rot_center(self.img, self.orientation, self.pos_x-20, self.pos_y-24)
+        debugimg, new_rects = rot_center(self.debugimg, self.orientation, self.pos_x-20, self.pos_y-24)
+        self.screen.blit(debugimg, (pos_x, pos_y))
         self.screen.blit(ship_image, (pos_x, pos_y))
 
     def move_random(self):

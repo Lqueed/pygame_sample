@@ -1,5 +1,6 @@
 from cmd.helpers.ObjectHelper import rot_center
 from cmd.objects.BaseShot import BaseShot
+from cmd.objects.BaseMob import BaseMob
 import uuid
 
 
@@ -22,19 +23,19 @@ class ObjectPositions:
         if object_type == 'mob':
             self.mobs.pop(obj_id, None)
 
-    def detect_collisions(self):
-        collided = []
-        for mob_id, coords in self.mobs.items():
-            if (coords[0] <= self.player[0] + self.player_x_size and \
-                coords[0] >= self.player[0] - self.player_x_size)\
-                and (coords[1] <= self.player[1] + self.player_y_size and \
-                     coords[1] >= self.player[1] - self.player_y_size):
-                collided.append(mob_id)
-        return collided
+    def add_mob(self, img, screen, object_positions):
+        mob_id = str(uuid.uuid4())
+        self.mobs[mob_id] = BaseMob(
+            img=img,
+            screen=screen,
+            mob_id=mob_id,
+            object_positions=object_positions
+        )
+        self.mobs[mob_id].spawn_random()
 
     def add_shot(self, img, angle):
-        pos_x = self.player[0] + self.player_x_size
-        pos_y = self.player[1] + self.player_y_size
+        pos_x = self.player[0]
+        pos_y = self.player[1]
         rotated_shot, _ = rot_center(img, angle, pos_x, pos_y)
         shot_id = str(uuid.uuid4())
         self.shots[shot_id] = BaseShot(
@@ -56,6 +57,41 @@ class ObjectPositions:
                 to_delete.append(shot_id)
         for shot_id in to_delete:
             self.shots.pop(shot_id)
+
+    def move_mobs(self, left, right, up, down):
+        for mob_id, mob_obj in self.mobs.items():
+            mob_obj.move(left, right, up, down)
+            mob_obj.move_random()
+
+    def draw_mobs(self):
+        for _, mob in self.mobs.items():
+            mob.draw()
+
+    def find_collisions(self):
+        mobs = self.detect_collisions_pl()
+        mobs += self.detect_collisions_shots()
+        for m_id in mobs:
+            if m_id in self.mobs:
+                self.mobs[m_id].destroy_ship(img="png/explosion.png")
+        self.destroy_timer()
+
+    def destroy_timer(self):
+        to_delete = []
+        for m_id in self.mobs:
+            if self.mobs[m_id].destroy_count >= 60:
+                to_delete.append(m_id)
+        for m_id in to_delete:
+            self.mobs.pop(m_id, None)
+
+    def detect_collisions_pl(self):
+        collided = []
+        for mob_id, coords in self.mobs.items():
+            if (coords[0] <= self.player[0] + self.player_x_size and \
+                coords[0] >= self.player[0] - self.player_x_size)\
+                and (coords[1] <= self.player[1] + self.player_y_size and \
+                     coords[1] >= self.player[1] - self.player_y_size):
+                collided.append(mob_id)
+        return collided
 
     def detect_collisions_shots(self):
         collided = []
