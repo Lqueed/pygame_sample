@@ -57,3 +57,10 @@ def detect_player_rotate(keys, speed: int = 10):
         speed_input = -speed
 
     return speed_input, left, right
+
+
+def detect_shoot(keys):
+    shoot = False
+    if keys[pygame.K_SPACE]:
+        shoot = True
+    return shoot

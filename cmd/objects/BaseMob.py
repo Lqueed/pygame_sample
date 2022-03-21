@@ -53,7 +53,9 @@ class BaseMob(BaseSpaceship, BaseTileBackground):
         self.screen.blit(ship_image, (pos_x, pos_y))
 
     def move_random(self):
-        if not self.is_destroyed:
+        if self.is_destroyed:
+            self.destroy_count += 1
+        else:
             if self.sleep_frames_count:
                 self.sleep_frames_count -= 1
 
@@ -94,8 +96,6 @@ class BaseMob(BaseSpaceship, BaseTileBackground):
 
                 self.random_moving_speed_direction = (left, right, up, down)
                 self.random_moving = True
-        else:
-            self.destroy_count += 1
 
     def move(self,
              left=None,
