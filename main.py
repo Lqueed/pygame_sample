@@ -28,6 +28,7 @@ from cmd.config.config import (
 display_size = (RES_X, RES_Y)
 
 pygame.init()
+pygame.font.init()
 screen = pygame.display.set_mode(display_size)
 pygame.display.set_caption(GAME_TITLE)
 
@@ -116,6 +117,11 @@ while run:
 
     # отрисовываем игрока и мобов
     object_positions.draw_all()
+
+    if object_positions.player_obj.destroyed:
+        myfont = pygame.font.SysFont('Arial Bold', int(RES_Y / 5))
+        textsurface = myfont.render('YOU FUCKED UP', False, (255, 255, 255))
+        screen.blit(textsurface, (RES_X / 2 - int(RES_X / 3.2), RES_Y / 2 - int(RES_Y / 20)))
 
     pygame.display.update()
 
