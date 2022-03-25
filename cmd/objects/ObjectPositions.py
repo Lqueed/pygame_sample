@@ -11,6 +11,7 @@ class ObjectPositions:
     """
     def __init__(self, screen):
         self.player = ()  # тут храним координаты
+        self.player_obj = None
         self.mobs = {}
         self.shots = {}
         self.player_x_size = 20  # mock
@@ -39,6 +40,9 @@ class ObjectPositions:
             object_positions=object_positions
         )
         self.mobs[mob_id].spawn_random()
+
+    def add_player(self, player):
+        self.player_obj = player
 
     def add_shot(self, img, angle):
         pos_x = self.player[0]
@@ -70,9 +74,16 @@ class ObjectPositions:
             mob_obj.move(left, right, up, down)
             mob_obj.move_random()
 
+    def draw_player(self):
+        self.player_obj.draw()
+
     def draw_mobs(self):
         for _, mob in self.mobs.items():
             mob.draw()
+
+    def draw_all(self):
+        self.draw_mobs()
+        self.draw_player()
 
     def find_collisions(self):
         """
@@ -107,6 +118,7 @@ class ObjectPositions:
                 and (coords.pos_y <= self.player[1] + self.player_y_size and \
                      coords.pos_y >= self.player[1] - self.player_y_size):
                 collided.append(mob_id)
+
         return collided
 
     def detect_collisions_shots(self):
