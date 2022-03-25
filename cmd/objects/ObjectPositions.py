@@ -7,7 +7,9 @@ from cmd.objects.BaseMob import BaseMob
 from cmd.config.config import (
     BASE_MOB_IMG,
     SPAWN_RATE,
-    EXPLOSION_IMAGE
+    EXPLOSION_IMAGE,
+    RES_X,
+    RES_Y
 )
 
 
@@ -156,3 +158,11 @@ class ObjectPositions:
                     self.add_mob(img=BASE_MOB_IMG,
                                  screen=self.screen,
                                  object_positions=self)
+
+    def del_too_far_mobs(self):
+        to_delete = []
+        for mob_id, mob in self.mobs.items():
+            if mob.pos_x - self.player[0] > RES_X * 3 or mob.pos_y - self.player[1] > RES_Y * 3:
+                to_delete.append(mob_id)
+        for mob_id in to_delete:
+            self.mobs.pop(mob_id)

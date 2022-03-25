@@ -108,6 +108,8 @@ while run:
     # сначала всегда отрисовываем фон, потом сверху все остальное
     bg.draw()
 
+    object_positions.del_too_far_mobs()
+
     # двигаем мобов и выстрелы
     object_positions.move_mobs(left, right, up, down)
     object_positions.move_shots()
