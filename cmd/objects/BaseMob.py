@@ -151,4 +151,3 @@ class BaseMob(BaseSpaceship, BaseTileBackground):
         """
         self.set_ship_img(img)
         self.is_destroyed = True
-        self.object_positions.del_object('mob', self.mob_id)
