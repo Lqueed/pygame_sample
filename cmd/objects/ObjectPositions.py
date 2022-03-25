@@ -1,7 +1,14 @@
+import random
+import uuid
+
 from cmd.helpers.ObjectHelper import rot_center
 from cmd.objects.BaseShot import BaseShot
 from cmd.objects.BaseMob import BaseMob
-import uuid
+from cmd.config.config import (
+    BASE_MOB_IMG,
+    SPAWN_RATE,
+    EXPLOSION_IMAGE
+)
 
 
 class ObjectPositions:
@@ -16,6 +23,8 @@ class ObjectPositions:
         self.shots = {}
         self.player_x_size = 20  # mock
         self.player_y_size = 20  # mock
+        self.mob_x_size_small = 24
+        self.mob_y_size_small = 24
         self.screen = screen
 
     def set_position(self, object_type, pos_x, pos_y, mob_id=0):
@@ -93,7 +102,7 @@ class ObjectPositions:
         mobs += self.detect_collisions_shots()
         for m_id in mobs:
             if m_id in self.mobs:
-                self.mobs[m_id].destroy_ship(img="png/explosion.png")
+                self.mobs[m_id].destroy_ship(img=EXPLOSION_IMAGE)
         self.destroy_timer()
 
     def destroy_timer(self):
@@ -118,7 +127,7 @@ class ObjectPositions:
                 and (coords.pos_y <= self.player[1] + self.player_y_size and \
                      coords.pos_y >= self.player[1] - self.player_y_size):
                 collided.append(mob_id)
-
+                self.player_obj.destroy_player()
         return collided
 
     def detect_collisions_shots(self):
@@ -129,12 +138,20 @@ class ObjectPositions:
         shot_to_del = []
         for shot_id, shot_data in self.shots.items():
             for mob_id, coords in self.mobs.items():
-                if (abs(shot_data.pos_x) <= coords.pos_x + self.player_x_size and \
-                    abs(shot_data.pos_x) >= coords.pos_x - self.player_x_size)\
-                    and (abs(shot_data.pos_y) <= coords.pos_y + self.player_y_size and \
-                         abs(shot_data.pos_y) >= coords.pos_y - self.player_y_size):
+                if (abs(shot_data.pos_x) <= coords.pos_x + self.mob_x_size_small and \
+                    abs(shot_data.pos_x) >= coords.pos_x - self.mob_x_size_small)\
+                    and (abs(shot_data.pos_y) <= coords.pos_y + self.mob_y_size_small and \
+                         abs(shot_data.pos_y) >= coords.pos_y - self.mob_y_size_small):
                     collided.append(mob_id)
                     shot_to_del.append(shot_id)
         for shot_id in shot_to_del:
             self.shots.pop(shot_id)
         return collided
+
+    def spawn_more_mobs_random(self):
+        if len(self.mobs) == 0:
+            if random.randint(0, SPAWN_RATE) == 0:
+                for _ in range(3):
+                    self.add_mob(img=BASE_MOB_IMG,
+                                 screen=self.screen,
+                                 object_positions=self)

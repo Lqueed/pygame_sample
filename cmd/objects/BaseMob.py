@@ -3,7 +3,10 @@ from BaseSpaceship import BaseSpaceship
 from cmd.background.BaseTileBackground import BaseTileBackground
 import random
 import pygame
-
+from cmd.config.config import (
+    RES_X,
+    RES_Y,
+)
 
 class BaseMob(BaseSpaceship, BaseTileBackground):
     """
@@ -24,7 +27,6 @@ class BaseMob(BaseSpaceship, BaseTileBackground):
         self.abs_pos_x = 0
         self.abs_pos_y = 0
         self.mob_id = mob_id
-        self.debugimg = pygame.image.load("png/debug.png")
 
         self.is_destroyed = False
         self.destroy_count = 0
@@ -54,10 +56,14 @@ class BaseMob(BaseSpaceship, BaseTileBackground):
 
     def spawn_random(self):
         """
-        спавним в рандомно пределах блока 1024х1024 от ЛВУ (пока что) - потом будем спавнить за пределами экрана
+        спавним в рандомно пределах экрана (пока что) - потом будем спавнить за пределами экрана
         """
-        self.pos_x = random.randint(0, 1024)
-        self.pos_y = random.randint(0, 1024)
+        self.pos_x = random.randint(0, RES_X)
+        self.pos_y = random.randint(0, RES_Y)
+
+        # self.pos_x = random.choice([-RES_X - random.randint(-RES_X, 0), RES_X + random.randint(0, RES_X)])
+        # self.pos_y = random.choice([-RES_Y - random.randint(-RES_Y, 0), RES_Y + random.randint(0, RES_Y)])
+
         self.abs_pos_x = self.pos_x
         self.abs_pos_y = self.pos_y
 

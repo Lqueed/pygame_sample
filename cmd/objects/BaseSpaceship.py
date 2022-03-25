@@ -57,7 +57,10 @@ class BaseSpaceship:
         orientation = BaseSpaceship.get_orientation(delta_x, delta_y, changed)
         self.set_orientation(orientation)
 
-    def get_set_rotation(self, speed, left, right):
+    def get_set_rotation(self, speed, left, right, destroyed: bool = False):
+        if destroyed:
+            return 0, 0, 0, 0
+
         self.rotate(left, right)
 
         speed_x = 0

@@ -7,7 +7,16 @@ from cmd.helpers.KeyHelper import (
     detect_shoot,
     detect_free_flight,
 )
-from cmd.config.config import RES_X, RES_Y
+from cmd.config.config import (
+    GAME_TITLE,
+    RES_X,
+    RES_Y,
+    speed,
+    SHOT_IMG,
+    BACKGOUND_TILE_IMG,
+    BASE_MOB_IMG,
+    BASE_PLAYER_IMG,
+)
 
 """
 Все методы содержащие в названии draw - отрисовывают объекты на экране
@@ -20,11 +29,10 @@ display_size = (RES_X, RES_Y)
 
 pygame.init()
 screen = pygame.display.set_mode(display_size)
-pygame.display.set_caption("sw game")
+pygame.display.set_caption(GAME_TITLE)
 
-speed = 5
 shoot_delay = 0
-shot_img = pygame.image.load("png/shot.png")
+shot_img = pygame.image.load(SHOT_IMG)
 
 # основной класс-синглтон, который хранит координаты всех объектов и через который считаем взаимодействия
 object_positions = ObjectPositions(screen=screen)
@@ -35,17 +43,17 @@ object_positions = ObjectPositions(screen=screen)
 #                 object_positions=object_positions)
 
 # объект фона - один
-bg = TileBackground(img="png/tile_bg.jpg",
+bg = TileBackground(img=BACKGOUND_TILE_IMG,
                     screen=screen)
 
 # спавним мобов сколько нужно
 for _ in range(3):
-    object_positions.add_mob(img="png/x-wing-small-inverted.png",
+    object_positions.add_mob(img=BASE_MOB_IMG,
                              screen=screen,
                              object_positions=object_positions)
 
 object_positions.add_player(
-    Player(img="png/x-wing-small.png",
+    Player(img=BASE_PLAYER_IMG,
            screen=screen,
            object_positions=object_positions)
 )
@@ -58,6 +66,9 @@ while run:
     for event in pygame.event.get():
         if event.type == pygame.QUIT:
             run = False
+
+    # спавн мобов если кончились
+    object_positions.spawn_more_mobs_random()
 
     # считываем нажатия клавиш
     keys = pygame.key.get_pressed()
@@ -72,7 +83,12 @@ while run:
     if free_flight:
         left, right, up, down = object_positions.player_obj.get_set_rotation_free_flight(left, right)
     else:
-        left, right, up, down = object_positions.player_obj.get_set_rotation(move_speed, left, right)
+        left, right, up, down = object_positions.player_obj.get_set_rotation(
+            move_speed,
+            left,
+            right,
+            object_positions.player_obj.destroyed
+        )
 
     shoot = detect_shoot(keys)
     if shoot:
