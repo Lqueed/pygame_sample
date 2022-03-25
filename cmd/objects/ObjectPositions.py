@@ -123,9 +123,10 @@ class ObjectPositions:
         collided = []
         for mob_id, coords in self.mobs.items():
             if (coords.pos_x <= self.player[0] + self.player_x_size and \
-                coords.pos_x >= self.player[0] - self.player_x_size)\
+                coords.pos_x >= self.player[0] - self.player_x_size) \
                 and (coords.pos_y <= self.player[1] + self.player_y_size and \
-                     coords.pos_y >= self.player[1] - self.player_y_size):
+                     coords.pos_y >= self.player[1] - self.player_y_size) \
+                and not coords.is_destroyed:
                 collided.append(mob_id)
                 self.player_obj.destroy_player()
         return collided

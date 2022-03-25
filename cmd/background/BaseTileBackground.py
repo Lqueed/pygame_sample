@@ -46,12 +46,20 @@ class BaseTileBackground:
             self.pos_y = 0
         dir_x = BaseTileBackground.get_direction(self.pos_x)
         dir_y = BaseTileBackground.get_direction(self.pos_y)
-        if self.pos_x != 0 or self.pos_x != 0:
+        if self.pos_x != 0 or self.pos_y != 0:
             # TODO: разобраться и сделать нормально
             self.screen.blit(self.tile_img, (self.pos_x + dir_x * self.resolution[0],
                                              self.pos_y + dir_y * self.resolution[1]))
             self.screen.blit(self.tile_img, (self.pos_x + dir_x*2 * self.resolution[0],
                                              self.pos_y + dir_y * self.resolution[1]))
+
+            #
+            self.screen.blit(self.tile_img, (self.pos_x - self.resolution[0],
+                                             self.pos_y))
+            self.screen.blit(self.tile_img, (self.pos_x + self.resolution[0],
+                                             self.pos_y))
+            #
+
             if self.pos_y != 0:
                 self.screen.blit(self.tile_img, (self.pos_x,
                                                  self.pos_y + dir_y * self.resolution[1]))
