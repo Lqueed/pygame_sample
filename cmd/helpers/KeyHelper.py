@@ -53,15 +53,16 @@ def detect_player_rotate(keys, speed: int = 10):
     left = None
     right = None
 
-    speed_input = 0
-    if keys[pygame.K_UP]:
-        speed_input = speed
+    speed_input = 5    # хардкод - постоянный полет со скоростью 10
+
+    # if keys[pygame.K_UP]:
+    #     speed_input = speed
+    # if keys[pygame.K_DOWN]:
+    #     speed_input = -speed
     if keys[pygame.K_LEFT]:
         left = True
     if keys[pygame.K_RIGHT]:
         right = True
-    if keys[pygame.K_DOWN]:
-        speed_input = -speed
 
     return speed_input, left, right
 
@@ -74,3 +75,13 @@ def detect_shoot(keys):
     if keys[pygame.K_SPACE]:
         shoot = True
     return shoot
+
+
+def detect_free_flight(keys):
+    """
+    полет с выключенными движками
+    """
+    free_flight = False
+    if keys[pygame.K_LCTRL]:
+        free_flight = True
+    return free_flight

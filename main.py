@@ -2,7 +2,11 @@ import pygame
 from cmd.objects.Player import Player
 from cmd.objects.ObjectPositions import ObjectPositions
 from cmd.background.TileBackground import TileBackground
-from cmd.helpers.KeyHelper import detect_player_rotate, detect_shoot
+from cmd.helpers.KeyHelper import (
+    detect_player_rotate,
+    detect_shoot,
+    detect_free_flight,
+)
 
 """
 Все методы содержащие в названии draw - отрисовывают объекты на экране
@@ -52,8 +56,15 @@ while run:
 
     # передвижение поворот + вперед-назад - определяем по кнопкам
     move_speed, left, right = detect_player_rotate(keys, speed)
+
+    # полет по инерции
+    free_flight = detect_free_flight(keys)
+
     # определяем направление полета
-    left, right, up, down = player.get_set_rotation(move_speed, left, right)
+    if free_flight:
+        left, right, up, down = player.get_set_rotation_free_flight(left, right)
+    else:
+        left, right, up, down = player.get_set_rotation(move_speed, left, right)
 
     shoot = detect_shoot(keys)
     if shoot:

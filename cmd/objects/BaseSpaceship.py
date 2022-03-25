@@ -12,6 +12,7 @@ class BaseSpaceship:
         self.img = pygame.image.load(img)
         self.orientation = 0
         self.object_positions = object_positions
+        self.prev_direction = (0, 0, 0, 0)
 
     def set_ship_img(self, img: str = None):
         self.img = pygame.image.load(img)
@@ -19,6 +20,17 @@ class BaseSpaceship:
     def set_orientation(self, orientation):
         if orientation is not None:
             self.orientation = orientation
+
+    def rotate(self, left, right):
+        if left:
+            self.orientation += 2
+        elif right:
+            self.orientation -= 2
+
+        if self.orientation >= 360:
+            self.orientation = 0
+        elif self.orientation <= 0:
+            self.orientation = 360
 
     @staticmethod
     def get_orientation(delta_x: int = 0, delta_y: int = 0, changed: bool = False):
@@ -46,15 +58,7 @@ class BaseSpaceship:
         self.set_orientation(orientation)
 
     def get_set_rotation(self, speed, left, right):
-        if left:
-            self.orientation += 2
-        elif right:
-            self.orientation -= 2
-
-        if self.orientation >= 360:
-            self.orientation = 0
-        elif self.orientation <= 0:
-            self.orientation = 360
+        self.rotate(left, right)
 
         speed_x = 0
         speed_y = 0
@@ -75,4 +79,10 @@ class BaseSpaceship:
         elif speed_y < 0:
             down = abs(speed_y)
 
+        self.prev_direction = (left, right, up, down)
+
         return left, right, up, down
+
+    def get_set_rotation_free_flight(self, left, right):
+        self.rotate(left, right)
+        return self.prev_direction
