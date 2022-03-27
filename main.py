@@ -4,6 +4,7 @@ from cmd.objects.Player import Player
 from cmd.objects.ObjectPositions import ObjectPositions
 from cmd.background.TileBackground import TileBackground
 from cmd.helpers.KeyHelper import KeyHelper
+from cmd.helpers.SoundHelper import SoundHelper
 from cmd.config.config import (
     GAME_TITLE,
     RES_X,
@@ -25,6 +26,7 @@ from cmd.config.config import (
 # константы и объект игры
 display_size = (RES_X, RES_Y)
 
+pygame.mixer.pre_init(frequency=44100, size=-16, channels=2, buffer=512, devicename=None)
 pygame.init()
 pygame.font.init()
 screen = pygame.display.set_mode(display_size)
@@ -35,9 +37,10 @@ shot_img = pygame.image.load(SHOT_IMG)
 
 main_stats = BaseStats(screen=screen)
 key_helper = KeyHelper()
+sound_helper = SoundHelper()
 
 # основной класс-синглтон, который хранит координаты всех объектов и через который считаем взаимодействия
-object_positions = ObjectPositions(screen=screen, stats=main_stats)
+object_positions = ObjectPositions(screen=screen, stats=main_stats, sounds=sound_helper)
 stats = object_positions.stats
 
 # синглтон игрока - будет один

@@ -18,7 +18,8 @@ class ObjectPositions:
     Общий класс для хранения объектов мобов, выстрелов и тд
     Все методы по движению и взаимодействию объектов вызываем через этот класс
     """
-    def __init__(self, screen, stats):
+    def __init__(self, screen, stats, sounds):
+        self.sounds = sounds
         self.stats = stats
         self.player = ()  # тут храним координаты
         self.player_obj = None
@@ -71,6 +72,7 @@ class ObjectPositions:
             screen=self.screen
         )
         self.shots[shot_id].draw_shot()
+        self.sounds.sound_shot()
 
     def move_shots(self):
         to_delete = []
