@@ -1,6 +1,7 @@
 from cmd.helpers.ObjectHelper import rot_center
 import pygame
 import math
+from cmd.config.config import PLAYER_ROTATE_SPEED
 
 
 class BaseSpaceship:
@@ -23,9 +24,9 @@ class BaseSpaceship:
 
     def rotate(self, left, right):
         if left:
-            self.orientation += 2
+            self.orientation += PLAYER_ROTATE_SPEED
         elif right:
-            self.orientation -= 2
+            self.orientation -= PLAYER_ROTATE_SPEED
 
         if self.orientation >= 360:
             self.orientation = 0

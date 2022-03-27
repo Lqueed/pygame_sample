@@ -9,6 +9,7 @@ speed = 5
 GAME_SPEED_FPS = 60
 AGGRESIVE_DISTANSE = 300
 MOB_SPEED = 4
+PLAYER_ROTATE_SPEED = 3
 
 img_folder = "png"
 sounds_folder = "sounds"
