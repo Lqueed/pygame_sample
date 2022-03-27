@@ -18,3 +18,4 @@ EXPLOSION_IMAGE = os.path.join(img_folder, "explosion.png")
 # CONTROLS
 PAUSE_KEY = pygame.K_p
 SHOOT_KEY_MAIN = pygame.K_SPACE
+FREE_FLIGHT_KEY = pygame.K_LCTRL

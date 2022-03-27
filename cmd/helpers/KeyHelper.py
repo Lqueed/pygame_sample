@@ -2,6 +2,7 @@ import pygame
 from cmd.config.config import (
     PAUSE_KEY,
     SHOOT_KEY_MAIN,
+    FREE_FLIGHT_KEY,
 )
 
 class KeyHelper:
@@ -9,6 +10,7 @@ class KeyHelper:
         self.key_press_delay = 0
         self.pause_key = PAUSE_KEY
         self.shoot_key = SHOOT_KEY_MAIN
+        self.free_flight = FREE_FLIGHT_KEY
 
     # Класс помощник для работы с нажатиями на кнопки
     @staticmethod
@@ -85,13 +87,12 @@ class KeyHelper:
             shoot = True
         return shoot
 
-    @staticmethod
-    def detect_free_flight(keys):
+    def detect_free_flight(self, keys):
         """
         полет с выключенными движками
         """
         free_flight = False
-        if keys[pygame.K_LCTRL]:
+        if keys[self.free_flight]:
             free_flight = True
         return free_flight
 
