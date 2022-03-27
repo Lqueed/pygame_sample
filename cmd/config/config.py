@@ -24,3 +24,4 @@ FREE_FLIGHT_KEY = pygame.K_LCTRL
 
 # SOUNDS
 SOUND_SHOT = os.path.join(sounds_folder, "blaster_shot.ogg")
+SOUND_EXPLOSION_SHORT = os.path.join(sounds_folder, "explosion_short.ogg")

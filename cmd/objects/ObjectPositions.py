@@ -106,6 +106,8 @@ class ObjectPositions:
         """
         mobs = self.detect_collisions_pl()
         mobs += self.detect_collisions_shots()
+        if mobs:
+            self.sounds.sound_explosion_short()
         for m_id in mobs:
             if m_id in self.mobs:
                 self.mobs[m_id].destroy_ship(img=EXPLOSION_IMAGE)
