@@ -73,18 +73,18 @@ while run:
         if event.type == pygame.QUIT:
             run = False
 
+    # считываем нажатия клавиш
+    keys = pygame.key.get_pressed()
+
+    if key_helper.detect_esc(keys):
+        run = False
+
     if end_game:
         bg.draw()
         object_positions.draw_all()
         stats.draw_endgame()
         pygame.display.update()
         continue
-
-    # считываем нажатия клавиш
-    keys = pygame.key.get_pressed()
-
-    if key_helper.detect_esc(keys):
-        run = False
 
     if key_helper.detect_pause(keys):
         pause_game = not pause_game
