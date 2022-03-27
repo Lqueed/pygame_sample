@@ -89,3 +89,24 @@ class BaseSpaceship:
     def get_set_rotation_free_flight(self, left, right):
         self.rotate(left, right)
         return self.prev_direction
+
+    def calculate_move(self, speed):
+        speed_x = int(math.sin(self.orientation * 0.017) * speed)
+        speed_y = int(math.cos(self.orientation * 0.017) * speed)
+
+        left = 0
+        right = 0
+        up = 0
+        down = 0
+        if speed_x < 0:
+            left = abs(speed_x)
+        elif speed_x > 0:
+            right = abs(speed_x)
+        if speed_y < 0:
+            up = abs(speed_y)
+        elif speed_y > 0:
+            down = abs(speed_y)
+
+        self.prev_direction = (left, right, up, down)
+
+        return left, right, up, down

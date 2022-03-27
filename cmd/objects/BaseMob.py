@@ -2,11 +2,14 @@ from cmd.helpers.ObjectHelper import rot_center
 from BaseSpaceship import BaseSpaceship
 from cmd.background.BaseTileBackground import BaseTileBackground
 import random
-import pygame
+import math
 from cmd.config.config import (
     RES_X,
     RES_Y,
+    AGGRESIVE_DISTANSE,
+    MOB_SPEED
 )
+
 
 class BaseMob(BaseSpaceship, BaseTileBackground):
     """
@@ -19,7 +22,7 @@ class BaseMob(BaseSpaceship, BaseTileBackground):
                  object_positions,
                  mob_id=0,
                  spawn_coords=(),
-                 aggressive=True):
+                 aggressive=False):
         super().__init__(screen=screen, img=img, object_positions=object_positions)
         self.aggressive = aggressive
         self.pos_x = 0
@@ -74,7 +77,12 @@ class BaseMob(BaseSpaceship, BaseTileBackground):
         ship_image, new_rect = rot_center(self.img, self.orientation, self.pos_x-20, self.pos_y-24)
         self.screen.blit(ship_image, (pos_x - int(new_rect.width / 2), pos_y - int(new_rect.height / 2)))
 
-    def move_random(self):
+    def is_player_near(self):
+        player_coords = self.object_positions.player
+        dist = int(math.sqrt((self.pos_x - player_coords[0]) ** 2 + (self.pos_y - player_coords[1]) ** 2))
+        return dist <= AGGRESIVE_DISTANSE
+
+    def move_mob(self):
         """
         Движение корабля в рандомных направлениях
         """
@@ -82,48 +90,64 @@ class BaseMob(BaseSpaceship, BaseTileBackground):
             # таймер до полного удаления
             self.destroy_count += 1
         else:
-            if self.sleep_frames_count:
+            if self.is_player_near():
+                self.move_to_player()
+
+            elif self.sleep_frames_count:
                 self.sleep_frames_count -= 1
 
-            elif self.random_moving:
-                # если в движении - двигаем
-                if self.future_move_orientation is not None:
-                    self.set_orientation(self.future_move_orientation)
-                self.drift_frames_count += 1
-                self.move(left=self.random_moving_speed_direction[0],
-                          right=self.random_moving_speed_direction[1],
-                          up=self.random_moving_speed_direction[2],
-                          down=self.random_moving_speed_direction[3])
-                if self.drift_frames_count >= self.drift_frames_limit:
-                    self.random_moving = False
-                    self.drift_frames_count = 0
-
             else:
-                # если не в движении - считаем куда двигать
-                self.drift_frames_limit = random.randint(30, 120)
-                self.sleep_frames_count = random.randint(30, 150)
-                delta_x = random.randint(-1, 1)
-                delta_y = random.randint(-1, 1)
-                changed = bool(delta_x or delta_y)
-                left = 0
-                right = 0
-                up = 0
-                down = 0
+                self.move_random()
 
-                if delta_x and delta_x > 0:
-                    left = random.randint(0, 3)
-                if delta_x and delta_x < 0:
-                    right = random.randint(0, 3)
+    def move_random(self):
+        if self.random_moving:
+            # если в движении - двигаем
+            if self.future_move_orientation is not None:
+                self.set_orientation(self.future_move_orientation)
+            self.drift_frames_count += 1
+            self.move(left=self.random_moving_speed_direction[0],
+                      right=self.random_moving_speed_direction[1],
+                      up=self.random_moving_speed_direction[2],
+                      down=self.random_moving_speed_direction[3])
+            if self.drift_frames_count >= self.drift_frames_limit:
+                self.random_moving = False
+                self.drift_frames_count = 0
 
-                if delta_y and delta_y > 0:
-                    up = random.randint(0, 3)
-                elif delta_y and delta_y < 0:
-                    down = random.randint(0, 3)
+        else:
+            # если не в движении - считаем куда двигать
+            self.drift_frames_limit = random.randint(30, 120)
+            self.sleep_frames_count = random.randint(30, 150)
+            delta_x = random.randint(-1, 1)
+            delta_y = random.randint(-1, 1)
+            changed = bool(delta_x or delta_y)
+            left = 0
+            right = 0
+            up = 0
+            down = 0
 
-                self.set_future_orientation(delta_x, delta_y, changed)
+            if delta_x and delta_x > 0:
+                left = random.randint(0, 3)
+            if delta_x and delta_x < 0:
+                right = random.randint(0, 3)
 
-                self.random_moving_speed_direction = (left, right, up, down)
-                self.random_moving = True
+            if delta_y and delta_y > 0:
+                up = random.randint(0, 3)
+            elif delta_y and delta_y < 0:
+                down = random.randint(0, 3)
+
+            self.set_future_orientation(delta_x, delta_y, changed)
+
+            self.random_moving_speed_direction = (left, right, up, down)
+            self.random_moving = True
+
+    def move_to_player(self):
+        pass
+        player_coords = self.object_positions.player
+        angle = - int(math.degrees(math.atan2(player_coords[1] - self.pos_y,
+                                              player_coords[0] - self.pos_x)) + 90)
+        self.set_orientation(angle)
+        left, right, up, down = self.calculate_move(MOB_SPEED)
+        self.move(left, right, up, down)
 
     def move(self,
              left=None,

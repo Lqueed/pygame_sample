@@ -86,7 +86,7 @@ class ObjectPositions:
     def move_mobs(self, left, right, up, down):
         for mob_id, mob_obj in self.mobs.items():
             mob_obj.move(left, right, up, down)
-            mob_obj.move_random()
+            mob_obj.move_mob()
 
     def draw_player(self):
         self.player_obj.draw()
