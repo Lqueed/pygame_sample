@@ -144,7 +144,8 @@ class ObjectPositions:
                 if (abs(shot_data.pos_x) <= coords.pos_x + self.mob_x_size_small and \
                     abs(shot_data.pos_x) >= coords.pos_x - self.mob_x_size_small)\
                     and (abs(shot_data.pos_y) <= coords.pos_y + self.mob_y_size_small and \
-                         abs(shot_data.pos_y) >= coords.pos_y - self.mob_y_size_small):
+                         abs(shot_data.pos_y) >= coords.pos_y - self.mob_y_size_small) \
+                    and not coords.is_destroyed:
                     collided.append(mob_id)
                     shot_to_del.append(shot_id)
         for shot_id in shot_to_del:
