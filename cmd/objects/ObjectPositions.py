@@ -18,7 +18,8 @@ class ObjectPositions:
     Общий класс для хранения объектов мобов, выстрелов и тд
     Все методы по движению и взаимодействию объектов вызываем через этот класс
     """
-    def __init__(self, screen):
+    def __init__(self, screen, stats):
+        self.stats = stats
         self.player = ()  # тут храним координаты
         self.player_obj = None
         self.mobs = {}
@@ -95,6 +96,7 @@ class ObjectPositions:
     def draw_all(self):
         self.draw_mobs()
         self.draw_player()
+        self.stats.draw()
 
     def find_collisions(self):
         """
@@ -148,6 +150,7 @@ class ObjectPositions:
                     and not coords.is_destroyed:
                     collided.append(mob_id)
                     shot_to_del.append(shot_id)
+                    self.stats.increase_score(10)
         for shot_id in shot_to_del:
             self.shots.pop(shot_id)
         return collided

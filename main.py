@@ -1,12 +1,9 @@
 import pygame
+from cmd.objects.BaseStats import BaseStats
 from cmd.objects.Player import Player
 from cmd.objects.ObjectPositions import ObjectPositions
 from cmd.background.TileBackground import TileBackground
-from cmd.helpers.KeyHelper import (
-    detect_player_rotate,
-    detect_shoot,
-    detect_free_flight,
-)
+from cmd.helpers.KeyHelper import KeyHelper
 from cmd.config.config import (
     GAME_TITLE,
     RES_X,
@@ -16,6 +13,7 @@ from cmd.config.config import (
     BACKGOUND_TILE_IMG,
     BASE_MOB_IMG,
     BASE_PLAYER_IMG,
+    GAME_SPEED_FPS,
 )
 
 """
@@ -35,8 +33,12 @@ pygame.display.set_caption(GAME_TITLE)
 shoot_delay = 0
 shot_img = pygame.image.load(SHOT_IMG)
 
+main_stats = BaseStats(screen=screen)
+key_helper = KeyHelper()
+
 # основной класс-синглтон, который хранит координаты всех объектов и через который считаем взаимодействия
-object_positions = ObjectPositions(screen=screen)
+object_positions = ObjectPositions(screen=screen, stats=main_stats)
+stats = object_positions.stats
 
 # синглтон игрока - будет один
 # player = Player(img="png/x-wing-small.png",
@@ -60,25 +62,48 @@ object_positions.add_player(
 )
 
 clock = pygame.time.Clock()
+
 run = True
+pause_game = False
+end_game = False
+
 while run:
-    # 60 фпс
-    clock.tick(60)
+    clock.tick(GAME_SPEED_FPS)
     for event in pygame.event.get():
         if event.type == pygame.QUIT:
             run = False
 
-    # спавн мобов если кончились
-    object_positions.spawn_more_mobs_random()
+    if end_game:
+        bg.draw()
+        object_positions.draw_all()
+        stats.draw_endgame()
+        pygame.display.update()
+        continue
 
     # считываем нажатия клавиш
     keys = pygame.key.get_pressed()
 
+    if key_helper.detect_esc(keys):
+        run = False
+
+    if key_helper.detect_pause(keys):
+        pause_game = not pause_game
+
+    if pause_game:
+        bg.draw()
+        object_positions.draw_all()
+        stats.draw_pause()
+        pygame.display.update()
+        continue
+
+    # спавн мобов если кончились
+    object_positions.spawn_more_mobs_random()
+
     # передвижение поворот + вперед-назад - определяем по кнопкам
-    move_speed, left, right = detect_player_rotate(keys, speed)
+    move_speed, left, right = key_helper.detect_player_rotate(keys, speed)
 
     # полет по инерции
-    free_flight = detect_free_flight(keys)
+    free_flight = key_helper.detect_free_flight(keys)
 
     # определяем направление полета
     if free_flight:
@@ -91,7 +116,7 @@ while run:
             object_positions.player_obj.destroyed
         )
 
-    shoot = detect_shoot(keys)
+    shoot = key_helper.detect_shoot(keys)
     if shoot:
         # стрельба - спавним новый выстрел раз в 20 фреймов (3 раза в секунду). Выстрел тоже объект
         if shoot_delay <= 0:
@@ -121,10 +146,9 @@ while run:
     object_positions.draw_all()
 
     if object_positions.player_obj.destroyed:
-        myfont = pygame.font.SysFont('Arial Bold', int(RES_Y / 5))
-        textsurface = myfont.render('YOU FUCKED UP', False, (255, 255, 255))
-        screen.blit(textsurface, (RES_X / 2 - int(RES_X / 3.2), RES_Y / 2 - int(RES_Y / 20)))
+        end_game = True
 
+    stats.increase_time()
     pygame.display.update()
 
 pygame.quit()
