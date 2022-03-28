@@ -3,6 +3,7 @@ from BaseSpaceship import BaseSpaceship
 from cmd.background.BaseTileBackground import BaseTileBackground
 import random
 import math
+import pygame
 from cmd.config.config import (
     RES_X,
     RES_Y,
@@ -61,11 +62,14 @@ class BaseMob(BaseSpaceship, BaseTileBackground):
         """
         спавним в рандомно пределах экрана (пока что) - потом будем спавнить за пределами экрана
         """
-        self.pos_x = random.randint(0, RES_X)
-        self.pos_y = random.randint(0, RES_Y)
+        # self.pos_x = random.randint(0, RES_X)
+        # self.pos_y = random.randint(0, RES_Y)
 
-        # self.pos_x = random.choice([-RES_X - random.randint(-RES_X, 0), RES_X + random.randint(0, RES_X)])
-        # self.pos_y = random.choice([-RES_Y - random.randint(-RES_Y, 0), RES_Y + random.randint(0, RES_Y)])
+        # за пределами экрана
+        self.pos_x = random.choice([random.randint(-2 * RES_X, -0.5 * RES_X),
+                                    random.randint(RES_X, 0.5 * RES_X * 2)])
+        self.pos_y = random.choice([random.randint(-2 * RES_Y, -0.5 * RES_Y),
+                                    random.randint(RES_Y, 0.5 * RES_Y * 2)])
 
         self.abs_pos_x = self.pos_x
         self.abs_pos_y = self.pos_y
@@ -141,13 +145,25 @@ class BaseMob(BaseSpaceship, BaseTileBackground):
             self.random_moving = True
 
     def move_to_player(self):
-        pass
-        player_coords = self.object_positions.player
-        angle = - int(math.degrees(math.atan2(player_coords[1] - self.pos_y,
-                                              player_coords[0] - self.pos_x)) + 90)
+        angle = - int(math.degrees(self.angle_to_player()) + 90)
         self.set_orientation(angle)
         left, right, up, down = self.calculate_move(MOB_SPEED)
         self.move(left, right, up, down)
+
+    def angle_to_player(self):
+        player_coords = self.object_positions.player
+        angle = math.atan2(player_coords[1] - self.pos_y, player_coords[0] - self.pos_x)
+        return angle
+
+    # времянка - направление к мобам от игрока
+    def draw_line_to_player(self):
+        angle = self.angle_to_player()
+        player_coords = self.object_positions.player
+        x1 = player_coords[0] - RES_X/15 * math.cos(angle)
+        y1 = player_coords[1] - RES_X/15 * math.sin(angle)
+        x2 = player_coords[0] - RES_Y/10 * math.cos(angle)
+        y2 = player_coords[1] - RES_Y/10 * math.sin(angle)
+        pygame.draw.line(self.screen, (100, 100, 100), (x1, y1), (x2, y2))
 
     def move(self,
              left=None,

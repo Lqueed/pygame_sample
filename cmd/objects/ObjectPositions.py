@@ -9,7 +9,8 @@ from cmd.config.config import (
     SPAWN_RATE,
     EXPLOSION_IMAGE,
     RES_X,
-    RES_Y
+    RES_Y,
+    ARROWS_TO_MOB
 )
 
 
@@ -94,6 +95,8 @@ class ObjectPositions:
     def draw_mobs(self):
         for _, mob in self.mobs.items():
             mob.draw()
+            if ARROWS_TO_MOB and not mob.is_destroyed:
+                mob.draw_line_to_player()
 
     def draw_all(self):
         self.draw_mobs()
