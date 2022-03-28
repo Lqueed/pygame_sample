@@ -82,7 +82,7 @@ class ObjectPositions:
             if shot.age >= 180:
                 to_delete.append(shot_id)
         for shot_id in to_delete:
-            self.shots.pop(shot_id)
+            self.shots.pop(shot_id, None)
 
     def move_mobs(self, left, right, up, down):
         for mob_id, mob_obj in self.mobs.items():
@@ -159,7 +159,7 @@ class ObjectPositions:
                     shot_to_del.append(shot_id)
                     self.stats.increase_score(10)
         for shot_id in shot_to_del:
-            self.shots.pop(shot_id)
+            self.shots.pop(shot_id, None)
         return collided
 
     def spawn_more_mobs_random(self):
@@ -176,4 +176,4 @@ class ObjectPositions:
             if mob.pos_x - self.player[0] > RES_X * 3 or mob.pos_y - self.player[1] > RES_Y * 3:
                 to_delete.append(mob_id)
         for mob_id in to_delete:
-            self.mobs.pop(mob_id)
+            self.mobs.pop(mob_id, None)

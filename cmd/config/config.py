@@ -17,7 +17,7 @@ sounds_folder = "sounds"
 
 #IMAGES
 SHOT_IMG = os.path.join(img_folder, "shot.png")
-BACKGOUND_TILE_IMG = os.path.join(img_folder, "tile_bg.jpg")
+BACKGOUND_TILE_IMG = os.path.join(img_folder, "tile_bg_blue.jpg")
 BASE_MOB_IMG = os.path.join(img_folder, "x-wing-small-inverted.png")
 BASE_PLAYER_IMG = os.path.join(img_folder, "x-wing-small.png")
 EXPLOSION_IMAGE = os.path.join(img_folder, "explosion.png")
