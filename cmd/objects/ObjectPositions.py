@@ -11,7 +11,8 @@ from cmd.config.config import (
     EXPLOSION_IMAGE,
     RES_X,
     RES_Y,
-    ARROWS_TO_MOB
+    ARROWS_TO_MOB,
+    BOMB_EXPLOSION_RADIUS
 )
 
 
@@ -218,10 +219,10 @@ class ObjectPositions:
 
         for mob_id, coords in self.mobs.items():
             for bomb_id, bmb_c in self.bombs.items():
-                if (coords.pos_x <= bmb_c.pos_x + 20 and \
-                    coords.pos_x >= bmb_c.pos_x - 20) \
-                    and (coords.pos_y <= bmb_c.pos_y + 20 and \
-                         coords.pos_y >= bmb_c.pos_y - 20) \
+                if (coords.pos_x <= bmb_c.pos_x + BOMB_EXPLOSION_RADIUS and \
+                    coords.pos_x >= bmb_c.pos_x - BOMB_EXPLOSION_RADIUS) \
+                    and (coords.pos_y <= bmb_c.pos_y + BOMB_EXPLOSION_RADIUS and \
+                         coords.pos_y >= bmb_c.pos_y - BOMB_EXPLOSION_RADIUS) \
                     and not coords.is_destroyed\
                     and bmb_c.aggressive:
                     collided_mob.append(mob_id)
