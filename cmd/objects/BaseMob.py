@@ -195,3 +195,4 @@ class BaseMob(BaseSpaceship, BaseTileBackground):
         """
         self.set_ship_img(img)
         self.is_destroyed = True
+        self.object_positions.sounds.sound_explosion_short()

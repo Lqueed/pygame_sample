@@ -46,7 +46,7 @@ class BaseBomb:
     def draw_bomb(self):
         if self.age >= 10:
             self.aggressive = True
-        if self.age >= 120:
+        if self.age >= 120 and not self.is_destroyed:
             self.is_destroyed = True
             self.destroy_bomb(img=EXPLOSION_IMAGE)
 
@@ -74,3 +74,4 @@ class BaseBomb:
     def destroy_bomb(self, img):
         self.is_destroyed = True
         self.set_bomb_img(img=img)
+        self.object_positions.sounds.sound_explosion_bomb()
