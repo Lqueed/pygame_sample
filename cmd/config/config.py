@@ -12,17 +12,21 @@ MOB_SPEED = 4
 PLAYER_ROTATE_SPEED = 3
 BOMB_EXPLOSION_RADIUS = 30
 ARROWS_TO_MOB = True
+SHOT_SPEED = 15
+POWER_SHOT_SPEED = 20
 
 img_folder = "png"
 sounds_folder = "sounds"
 
 #IMAGES
 SHOT_IMG = os.path.join(img_folder, "shot.png")
+POWER_SHOT_IMG = os.path.join(img_folder, "shot_yellow.png")
 BACKGOUND_TILE_IMG = os.path.join(img_folder, "tile_bg_blue.jpg")
 BASE_MOB_IMG = os.path.join(img_folder, "x-wing-small-inverted.png")
 BASE_PLAYER_IMG = os.path.join(img_folder, "x-wing-small.png")
 EXPLOSION_IMAGE = os.path.join(img_folder, "explosion.png")
 BOMB_IMG = os.path.join(img_folder, "bomb.png")
+BONUS_IMG = os.path.join(img_folder, "bonus.png")
 
 # CONTROLS
 PAUSE_KEY = pygame.K_p

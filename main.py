@@ -15,7 +15,8 @@ from cmd.config.config import (
     BASE_MOB_IMG,
     BASE_PLAYER_IMG,
     GAME_SPEED_FPS,
-    BOMB_IMG
+    BOMB_IMG,
+    POWER_SHOT_IMG
 )
 
 """
@@ -104,6 +105,7 @@ while run:
 
     # спавн мобов если кончились
     object_positions.spawn_more_mobs_random()
+    object_positions.spawn_bonus_random()
 
     # передвижение поворот + вперед-назад - определяем по кнопкам
     move_speed, left, right = key_helper.detect_player_rotate(keys, speed)
@@ -123,10 +125,12 @@ while run:
         )
 
     shoot = key_helper.detect_shoot(keys)
+    shot_type = object_positions.get_player_shot_type()
     if shoot:
         # стрельба - спавним новый выстрел раз в 20 фреймов (3 раза в секунду). Выстрел тоже объект
+        print(object_positions.get_player_shot_type(), object_positions.player_obj.active_bonuses)
         if shoot_delay <= 0:
-            object_positions.add_shot(shot_img, object_positions.player_obj.orientation)
+            object_positions.add_shot(object_positions.player_obj.orientation, shot_type=shot_type)
             shoot_delay = 20
 
     bomb = key_helper.detect_bomb_drop(keys)
@@ -147,7 +151,7 @@ while run:
     # сначала всегда отрисовываем фон, потом сверху все остальное
     bg.draw()
 
-    object_positions.del_too_far_mobs()
+    object_positions.del_too_far_objects()
 
     # двигаем мобов и выстрелы
     object_positions.move_objects(left, right, up, down)

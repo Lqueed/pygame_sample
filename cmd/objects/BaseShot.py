@@ -1,21 +1,31 @@
 from cmd.helpers.ObjectHelper import rot_center
 import math
+import pygame
+
+from cmd.config.config import SHOT_SPEED, SHOT_IMG
 
 
 class BaseShot:
     """
     Базовый класс для выстрелов - хранит состояние, координаты, угол, скорость и id
     """
-    def __init__(self, id, object_positions, img, angle, pos_x, pos_y, screen):
+    def __init__(self, id, object_positions, angle, pos_x, pos_y, screen):
         self.id = id
+        self.img = None
         self.object_positions = object_positions
-        self.img = img
         self.angle = angle
         self.pos_x = pos_x
         self.pos_y = pos_y
         self.screen = screen
-        self.speed = 15  # пока хардкод
+        self.speed = SHOT_SPEED
         self.age = 0
+        self.set_img(SHOT_IMG)
+        self.power = False
+
+    def set_img(self, img):
+        self.img = pygame.image.load(img)
+        rotated_shot, _ = rot_center(self.img, self.angle, self.pos_x, self.pos_y)
+        self.img = rotated_shot
 
     def move(self):
         """

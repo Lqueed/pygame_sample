@@ -3,8 +3,10 @@ import uuid
 
 from cmd.helpers.ObjectHelper import rot_center
 from cmd.objects.BaseShot import BaseShot
+from cmd.objects.PowerShot import PowerShot
 from cmd.objects.BaseMob import BaseMob
 from cmd.objects.BaseBomb import BaseBomb
+from cmd.objects.BaseBonus import BaseBonus
 from cmd.config.config import (
     BASE_MOB_IMG,
     SPAWN_RATE,
@@ -12,7 +14,8 @@ from cmd.config.config import (
     RES_X,
     RES_Y,
     ARROWS_TO_MOB,
-    BOMB_EXPLOSION_RADIUS
+    BOMB_EXPLOSION_RADIUS,
+    BONUS_IMG
 )
 
 
@@ -29,6 +32,7 @@ class ObjectPositions:
         self.mobs = {}
         self.shots = {}
         self.bombs = {}
+        self.bonuses = {}
         self.player_x_size = 20  # mock
         self.player_y_size = 20  # mock
         self.mob_x_size_small = 24
@@ -61,22 +65,33 @@ class ObjectPositions:
     def add_player(self, player):
         self.player_obj = player
 
-    def add_shot(self, img, angle):
+    def add_shot(self, angle, shot_type='base'):
         pos_x = self.player[0]
         pos_y = self.player[1]
-        rotated_shot, _ = rot_center(img, angle, pos_x, pos_y)
         shot_id = str(uuid.uuid4())
-        self.shots[shot_id] = BaseShot(
-            id=shot_id,
-            object_positions=self,
-            img=rotated_shot,
-            angle=angle,
-            pos_x=pos_x,
-            pos_y=pos_y,
-            screen=self.screen
-        )
-        self.shots[shot_id].draw_shot()
-        self.sounds.sound_shot()
+
+        if shot_type == 'power':
+            self.shots[shot_id] = PowerShot(
+                id=shot_id,
+                object_positions=self,
+                angle=angle,
+                pos_x=pos_x,
+                pos_y=pos_y,
+                screen=self.screen
+            )
+            self.shots[shot_id].draw_shot()
+            self.sounds.sound_shot()
+        elif shot_type == 'base':
+            self.shots[shot_id] = BaseShot(
+                id=shot_id,
+                object_positions=self,
+                angle=angle,
+                pos_x=pos_x,
+                pos_y=pos_y,
+                screen=self.screen
+            )
+            self.shots[shot_id].draw_shot()
+            self.sounds.sound_shot()
 
     def add_bomb(self, img):
         pos_x = self.player[0]
@@ -93,6 +108,16 @@ class ObjectPositions:
         )
         self.bombs[bomb_id].spawn()
 
+    def add_bonus(self, img):
+        bonus_id = str(uuid.uuid4())
+        self.bonuses[bonus_id] = BaseBonus(
+            id=bonus_id,
+            img=img,
+            screen=self.screen,
+            object_positions=self
+        )
+        self.bonuses[bonus_id].spawn_random()
+
     def move_shots(self):
         to_delete = []
         for shot_id, shot in self.shots.items():
@@ -108,6 +133,8 @@ class ObjectPositions:
             mob_obj.move_mob()
         for bomb_id, bomb_obj in self.bombs.items():
             bomb_obj.move(left, right, up, down)
+        for bonus_id, bonus_obj in self.bonuses.items():
+            bonus_obj.move(left, right, up, down)
 
     def draw_player(self):
         self.player_obj.draw()
@@ -122,11 +149,18 @@ class ObjectPositions:
         for _, bomb in self.bombs.items():
             bomb.draw_bomb()
 
+    def draw_bonuses(self):
+        for _, bonus in self.bonuses.items():
+            bonus.draw_bonus()
+
     def draw_all(self):
         self.draw_bombs()
+        self.draw_bonuses()
         self.draw_mobs()
         self.draw_player()
         self.stats.draw()
+
+        self.check_active_bonuses()
 
     def find_collisions(self):
         """
@@ -143,6 +177,10 @@ class ObjectPositions:
         for b_id in collided_bombs:
             if b_id in self.bombs:
                 self.bombs[b_id].destroy_bomb(img=EXPLOSION_IMAGE)
+
+        bonuses = self.detect_collisions_bonuses()
+        for b_id in bonuses:
+            self.bonuses.pop(b_id, None)
 
         self.destroy_timer()
 
@@ -193,7 +231,8 @@ class ObjectPositions:
                          abs(shot_data.pos_y) >= coords.pos_y - self.mob_y_size_small) \
                     and not coords.is_destroyed:
                     collided.append(mob_id)
-                    shot_to_del.append(shot_id)
+                    if not shot_data.power:
+                        shot_to_del.append(shot_id)
                     self.stats.increase_score(10)
         for shot_id in shot_to_del:
             self.shots.pop(shot_id, None)
@@ -228,6 +267,17 @@ class ObjectPositions:
 
         return collided_mob, collided_bomb
 
+    def detect_collisions_bonuses(self):
+        collided = []
+        for bonus_id, coords in self.bonuses.items():
+            if (coords.pos_x <= self.player[0] + self.player_x_size and \
+                coords.pos_x >= self.player[0] - self.player_x_size) \
+                    and (coords.pos_y <= self.player[1] + self.player_y_size and \
+                         coords.pos_y >= self.player[1] - self.player_y_size):
+                collided.append(bonus_id)
+                self.set_player_shot_type(coords.type)
+        return collided
+
     def spawn_more_mobs_random(self):
         if len(self.mobs) == 0:
             if random.randint(0, SPAWN_RATE) == 0:
@@ -236,10 +286,30 @@ class ObjectPositions:
                                  screen=self.screen,
                                  object_positions=self)
 
-    def del_too_far_mobs(self):
+    def spawn_bonus_random(self):
+        if random.randint(0, SPAWN_RATE) == 0:
+            for _ in range(1):
+                self.add_bonus(img=BONUS_IMG)
+
+    def del_too_far_objects(self):
         to_delete = []
         for mob_id, mob in self.mobs.items():
             if mob.pos_x - self.player[0] > RES_X * 3 or mob.pos_y - self.player[1] > RES_Y * 3:
                 to_delete.append(mob_id)
         for mob_id in to_delete:
             self.mobs.pop(mob_id, None)
+
+        for s_id, shot in self.shots.items():
+            if shot.pos_x - self.player[0] > RES_X * 3 or shot.pos_y - self.player[1] > RES_Y * 3:
+                to_delete.append(s_id)
+        for s_id in to_delete:
+            self.shots.pop(s_id, None)
+
+    def get_player_shot_type(self):
+        return self.player_obj.get_shot_type()
+
+    def set_player_shot_type(self, shot_type: str):
+        self.player_obj.set_shot_type(shot_type)
+
+    def check_active_bonuses(self):
+        self.player_obj.check_active_bonuses()

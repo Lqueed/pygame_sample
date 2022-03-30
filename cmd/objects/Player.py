@@ -16,6 +16,8 @@ class Player(BaseSpaceship):
         super().__init__(screen, object_positions, img)
         self.object_positions.set_position('player', RES_X/2, RES_Y/2)
         self.destroyed = False
+        self.shot_type = 'base'
+        self.active_bonuses = {}
 
     def draw(self):
         player_image, new_rect = rot_center(self.img,
@@ -27,3 +29,22 @@ class Player(BaseSpaceship):
     def destroy_player(self):
         self.destroyed = True
         self.set_ship_img(img=EXPLOSION_IMAGE)
+
+    def set_shot_type(self, shot_type: str = 'base'):
+        self.shot_type = shot_type
+        self.active_bonuses['shot'] = 0
+
+    def get_shot_type(self):
+        return self.shot_type
+
+    def check_active_bonuses(self):
+        to_delete = []
+        for bonus_type in self.active_bonuses:
+            self.active_bonuses[bonus_type] += 1
+            if self.active_bonuses[bonus_type] >= 360:
+                to_delete.append(bonus_type)
+                if bonus_type == 'shot':
+                    self.set_shot_type()
+
+        for item in to_delete:
+            self.active_bonuses.pop(item, False)
