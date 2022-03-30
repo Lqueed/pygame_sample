@@ -44,11 +44,11 @@ class BaseBomb:
         self.img = pygame.image.load(img)
 
     def draw_bomb(self):
-        if self.age >= 60:
+        if self.age >= 10:
             self.aggressive = True
         if self.age >= 120:
             self.is_destroyed = True
-            self.destroy_bomb()
+            self.destroy_bomb(img=EXPLOSION_IMAGE)
 
         if not self.is_destroyed:
             if self.age % 10 == 0:
@@ -71,5 +71,6 @@ class BaseBomb:
         self.abs_pos_x = self.pos_x
         self.abs_pos_y = self.pos_y
 
-    def destroy_bomb(self):
-        self.set_bomb_img(img=EXPLOSION_IMAGE)
+    def destroy_bomb(self, img):
+        self.is_destroyed = True
+        self.set_bomb_img(img=img)

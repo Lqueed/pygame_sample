@@ -122,8 +122,8 @@ class ObjectPositions:
             bomb.draw_bomb()
 
     def draw_all(self):
-        self.draw_mobs()
         self.draw_bombs()
+        self.draw_mobs()
         self.draw_player()
         self.stats.draw()
 
@@ -133,12 +133,18 @@ class ObjectPositions:
         """
         mobs = self.detect_collisions_pl()
         mobs += self.detect_collisions_shots()
-        # mobs += self.detect_collisions_bombs()
-        if mobs:
+        collided_mobs, collided_bombs = self.detect_collisions_bombs()
+        mobs += collided_mobs
+        if mobs or collided_mobs:
             self.sounds.sound_explosion_short()
         for m_id in mobs:
             if m_id in self.mobs:
                 self.mobs[m_id].destroy_ship(img=EXPLOSION_IMAGE)
+
+        for b_id in collided_bombs:
+            if b_id in self.bombs:
+                self.bombs[b_id].destroy_bomb(img=EXPLOSION_IMAGE)
+
         self.destroy_timer()
 
     def destroy_timer(self):
@@ -193,6 +199,35 @@ class ObjectPositions:
         for shot_id in shot_to_del:
             self.shots.pop(shot_id, None)
         return collided
+
+    def detect_collisions_bombs(self):
+        """
+        Ищем столкновения бомб с мобами и игроком
+        """
+        collided_mob = []
+        collided_bomb = []
+
+        for bomb_id, coords in self.bombs.items():
+            if (coords.pos_x <= self.player[0] + self.player_x_size and \
+                coords.pos_x >= self.player[0] - self.player_x_size) \
+                    and (coords.pos_y <= self.player[1] + self.player_y_size and \
+                         coords.pos_y >= self.player[1] - self.player_y_size) \
+                    and coords.aggressive:
+                collided_bomb.append(bomb_id)
+                self.player_obj.destroy_player()
+
+        for mob_id, coords in self.mobs.items():
+            for bomb_id, bmb_c in self.bombs.items():
+                if (coords.pos_x <= bmb_c.pos_x + 20 and \
+                    coords.pos_x >= bmb_c.pos_x - 20) \
+                    and (coords.pos_y <= bmb_c.pos_y + 20 and \
+                         coords.pos_y >= bmb_c.pos_y - 20) \
+                    and not coords.is_destroyed\
+                    and bmb_c.aggressive:
+                    collided_mob.append(mob_id)
+                    collided_bomb.append(bomb_id)
+
+        return collided_mob, collided_bomb
 
     def spawn_more_mobs_random(self):
         if len(self.mobs) == 0:
