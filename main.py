@@ -15,6 +15,7 @@ from cmd.config.config import (
     BASE_MOB_IMG,
     BASE_PLAYER_IMG,
     GAME_SPEED_FPS,
+    BOMB_IMG
 )
 
 """
@@ -33,7 +34,9 @@ screen = pygame.display.set_mode(display_size)
 pygame.display.set_caption(GAME_TITLE)
 
 shoot_delay = 0
+bomb_delay = 0
 shot_img = pygame.image.load(SHOT_IMG)
+bomb_img = pygame.image.load(BOMB_IMG)
 
 main_stats = BaseStats(screen=screen)
 key_helper = KeyHelper()
@@ -126,9 +129,17 @@ while run:
             object_positions.add_shot(shot_img, object_positions.player_obj.orientation)
             shoot_delay = 20
 
+    bomb = key_helper.detect_bomb_drop(keys)
+    if bomb:
+        if bomb_delay <= 0:
+            object_positions.add_bomb(bomb_img)
+            bomb_delay = 120
+
     # обратный отсчет фреймов до след выстрела
     if shoot_delay > 0:
         shoot_delay -= 1
+    if bomb_delay > 0:
+        bomb_delay -= 1
 
     # двигаем фон
     bg.move(left, right, up, down)
@@ -139,7 +150,7 @@ while run:
     object_positions.del_too_far_mobs()
 
     # двигаем мобов и выстрелы
-    object_positions.move_mobs(left, right, up, down)
+    object_positions.move_objects(left, right, up, down)
     object_positions.move_shots()
 
     # ищем пересечения хитбоксов мобов с игроком и выстрелами

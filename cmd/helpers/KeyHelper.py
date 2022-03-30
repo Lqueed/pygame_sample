@@ -3,6 +3,7 @@ from cmd.config.config import (
     PAUSE_KEY,
     SHOOT_KEY_MAIN,
     FREE_FLIGHT_KEY,
+    BOMB_KEY
 )
 
 class KeyHelper:
@@ -11,6 +12,7 @@ class KeyHelper:
         self.pause_key = PAUSE_KEY
         self.shoot_key = SHOOT_KEY_MAIN
         self.free_flight = FREE_FLIGHT_KEY
+        self.bomb_key = BOMB_KEY
 
     # Класс помощник для работы с нажатиями на кнопки
     @staticmethod
@@ -84,6 +86,15 @@ class KeyHelper:
         """
         shoot = False
         if keys[self.shoot_key]:
+            shoot = True
+        return shoot
+
+    def detect_bomb_drop(self, keys):
+        """
+        пиу пиу
+        """
+        shoot = False
+        if keys[self.bomb_key]:
             shoot = True
         return shoot
 

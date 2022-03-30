@@ -21,11 +21,13 @@ BACKGOUND_TILE_IMG = os.path.join(img_folder, "tile_bg_blue.jpg")
 BASE_MOB_IMG = os.path.join(img_folder, "x-wing-small-inverted.png")
 BASE_PLAYER_IMG = os.path.join(img_folder, "x-wing-small.png")
 EXPLOSION_IMAGE = os.path.join(img_folder, "explosion.png")
+BOMB_IMG = os.path.join(img_folder, "bomb.png")
 
 # CONTROLS
 PAUSE_KEY = pygame.K_p
 SHOOT_KEY_MAIN = pygame.K_SPACE
 FREE_FLIGHT_KEY = pygame.K_LCTRL
+BOMB_KEY = pygame.K_LALT
 
 # SOUNDS
 SOUND_SHOT = os.path.join(sounds_folder, "blaster_shot.ogg")

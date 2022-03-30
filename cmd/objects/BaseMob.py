@@ -183,8 +183,6 @@ class BaseMob(BaseSpaceship, BaseTileBackground):
             self.abs_pos_y -= down
             self.pos_y -= down
 
-        self.object_positions.set_position('mob', self.abs_pos_x, self.abs_pos_y, self.mob_id)
-
     def set_future_orientation(self, delta_x, delta_y, changed):
         """
         Направить нос корабля в ту сторону, в которую он потом полетит

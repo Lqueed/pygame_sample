@@ -4,6 +4,7 @@ import uuid
 from cmd.helpers.ObjectHelper import rot_center
 from cmd.objects.BaseShot import BaseShot
 from cmd.objects.BaseMob import BaseMob
+from cmd.objects.BaseBomb import BaseBomb
 from cmd.config.config import (
     BASE_MOB_IMG,
     SPAWN_RATE,
@@ -26,6 +27,7 @@ class ObjectPositions:
         self.player_obj = None
         self.mobs = {}
         self.shots = {}
+        self.bombs = {}
         self.player_x_size = 20  # mock
         self.player_y_size = 20  # mock
         self.mob_x_size_small = 24
@@ -75,6 +77,21 @@ class ObjectPositions:
         self.shots[shot_id].draw_shot()
         self.sounds.sound_shot()
 
+    def add_bomb(self, img):
+        pos_x = self.player[0]
+        pos_y = self.player[1]
+        bomb_id = str(uuid.uuid4())
+        self.bombs[bomb_id] = BaseBomb(
+            id=bomb_id,
+            object_positions=self,
+            img=img,
+            angle=0,
+            pos_x=pos_x,
+            pos_y=pos_y,
+            screen=self.screen
+        )
+        self.bombs[bomb_id].spawn()
+
     def move_shots(self):
         to_delete = []
         for shot_id, shot in self.shots.items():
@@ -84,10 +101,12 @@ class ObjectPositions:
         for shot_id in to_delete:
             self.shots.pop(shot_id, None)
 
-    def move_mobs(self, left, right, up, down):
+    def move_objects(self, left, right, up, down):
         for mob_id, mob_obj in self.mobs.items():
             mob_obj.move(left, right, up, down)
             mob_obj.move_mob()
+        for bomb_id, bomb_obj in self.bombs.items():
+            bomb_obj.move(left, right, up, down)
 
     def draw_player(self):
         self.player_obj.draw()
@@ -98,8 +117,13 @@ class ObjectPositions:
             if ARROWS_TO_MOB and not mob.is_destroyed:
                 mob.draw_line_to_player()
 
+    def draw_bombs(self):
+        for _, bomb in self.bombs.items():
+            bomb.draw_bomb()
+
     def draw_all(self):
         self.draw_mobs()
+        self.draw_bombs()
         self.draw_player()
         self.stats.draw()
 
@@ -109,6 +133,7 @@ class ObjectPositions:
         """
         mobs = self.detect_collisions_pl()
         mobs += self.detect_collisions_shots()
+        # mobs += self.detect_collisions_bombs()
         if mobs:
             self.sounds.sound_explosion_short()
         for m_id in mobs:
@@ -120,12 +145,19 @@ class ObjectPositions:
         """
         Таймер до уничтожения объекта - пока показываем спрайт взрыва
         """
-        to_delete = []
+        to_delete_mobs = []
         for m_id in self.mobs:
             if self.mobs[m_id].destroy_count >= 60:
-                to_delete.append(m_id)
-        for m_id in to_delete:
+                to_delete_mobs.append(m_id)
+        for m_id in to_delete_mobs:
             self.mobs.pop(m_id, None)
+
+        to_delete_bombs = []
+        for b_id in self.bombs:
+            if self.bombs[b_id].destroy_count >= 60:
+                to_delete_bombs.append(b_id)
+        for b_id in to_delete_bombs:
+            self.bombs.pop(b_id, None)
 
     def detect_collisions_pl(self):
         """
