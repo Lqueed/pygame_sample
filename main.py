@@ -127,7 +127,6 @@ while run:
     shot_type = object_positions.get_player_shot_type()
     if shoot:
         # стрельба - спавним новый выстрел раз в 20 фреймов (3 раза в секунду). Выстрел тоже объект
-        print(object_positions.get_player_shot_type(), object_positions.player_obj.active_bonuses)
         if shoot_delay <= 0:
             object_positions.add_shot(object_positions.player_obj.orientation, shot_type=shot_type)
             shoot_delay = 20
