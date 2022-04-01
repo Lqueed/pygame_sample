@@ -14,6 +14,7 @@ BOMB_EXPLOSION_RADIUS = 30
 ARROWS_TO_MOB = True
 SHOT_SPEED = 15
 POWER_SHOT_SPEED = 20
+BONUS_SPAWN_CHANCE = 10
 
 img_folder = "png"
 sounds_folder = "sounds"

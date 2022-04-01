@@ -105,7 +105,6 @@ while run:
 
     # спавн мобов если кончились
     object_positions.spawn_more_mobs_random()
-    object_positions.spawn_bonus_random()
 
     # передвижение поворот + вперед-назад - определяем по кнопкам
     move_speed, left, right = key_helper.detect_player_rotate(keys, speed)

@@ -1,7 +1,7 @@
 import random
 import uuid
 
-from cmd.helpers.ObjectHelper import rot_center
+from cmd.helpers.ObjectHelper import rot_center, random_fn
 from cmd.objects.BaseShot import BaseShot
 from cmd.objects.PowerShot import PowerShot
 from cmd.objects.BaseMob import BaseMob
@@ -15,7 +15,8 @@ from cmd.config.config import (
     RES_Y,
     ARROWS_TO_MOB,
     BOMB_EXPLOSION_RADIUS,
-    BONUS_IMG
+    BONUS_IMG,
+    BONUS_SPAWN_CHANCE
 )
 
 
@@ -108,7 +109,7 @@ class ObjectPositions:
         )
         self.bombs[bomb_id].spawn()
 
-    def add_bonus(self, img):
+    def add_bonus(self, img, pos_x=None, pos_y=None):
         bonus_id = str(uuid.uuid4())
         self.bonuses[bonus_id] = BaseBonus(
             id=bonus_id,
@@ -116,7 +117,10 @@ class ObjectPositions:
             screen=self.screen,
             object_positions=self
         )
-        self.bonuses[bonus_id].spawn_random()
+        if pos_x and pos_y:
+            self.bonuses[bonus_id].spawn_coords(pos_x, pos_y)
+        else:
+            self.bonuses[bonus_id].spawn_random()
 
     def move_shots(self):
         to_delete = []
@@ -189,10 +193,17 @@ class ObjectPositions:
         Таймер до уничтожения объекта - пока показываем спрайт взрыва
         """
         to_delete_mobs = []
+        spawn_bonus = random_fn(BONUS_SPAWN_CHANCE)
+
         for m_id in self.mobs:
             if self.mobs[m_id].destroy_count >= 60:
                 to_delete_mobs.append(m_id)
         for m_id in to_delete_mobs:
+            if spawn_bonus:
+                self.add_bonus(img=BONUS_IMG,
+                               pos_x=self.mobs[m_id].pos_x,
+                               pos_y=self.mobs[m_id].pos_y)
+                spawn_bonus = False
             self.mobs.pop(m_id, None)
 
         to_delete_bombs = []

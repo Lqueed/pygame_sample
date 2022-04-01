@@ -59,3 +59,8 @@ class BaseBonus:
         self.pos_x = random.randint(0, RES_X)
         self.pos_y = random.randint(0, RES_Y)
         self.spawn()
+
+    def spawn_coords(self, pos_x, pos_y):
+        self.pos_x = pos_x
+        self.pos_y = pos_y
+        self.spawn()
