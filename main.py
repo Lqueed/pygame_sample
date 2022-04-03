@@ -62,7 +62,7 @@ bg = TileBackground(img=BACKGOUND_TILE_IMG,
 
 # спавним мобов сколько нужно
 for _ in range(1):
-    object_positions.add_big_mob(img=BASE_MOB_IMG,
+    object_positions.add_mob(img=BASE_MOB_IMG,
                              screen=screen,
                              object_positions=object_positions)
 
