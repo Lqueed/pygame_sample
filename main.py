@@ -16,7 +16,6 @@ from cmd.config.config import (
     BASE_PLAYER_IMG,
     GAME_SPEED_FPS,
     BOMB_IMG,
-    POWER_SHOT_IMG
 )
 
 """
@@ -33,6 +32,11 @@ pygame.init()
 pygame.font.init()
 screen = pygame.display.set_mode(display_size)
 pygame.display.set_caption(GAME_TITLE)
+
+# temp background music
+pygame.mixer.music.load("sounds/DuelOfFates.mp3")
+pygame.mixer.music.set_volume(1.2)
+pygame.mixer.music.play(-1)
 
 shoot_delay = 0
 bomb_delay = 0
