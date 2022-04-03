@@ -7,6 +7,7 @@ from cmd.objects.BaseShot import BaseShot
 from cmd.objects.PowerShot import PowerShot
 from cmd.objects.BaseMob import BaseMob
 from cmd.objects.BigMob import BigMob
+from cmd.objects.SatteliteMob import SatteliteMob
 from cmd.objects.BaseBomb import BaseBomb
 from cmd.objects.BaseBonus import BaseBonus
 from cmd.config.config import (
@@ -19,7 +20,8 @@ from cmd.config.config import (
     BOMB_EXPLOSION_RADIUS,
     BONUS_IMG,
     BONUS_SPAWN_CHANCE,
-    BIG_MOB_IMG
+    BIG_MOB_IMG,
+    SATTELITE_MOB_IMAGE
 )
 
 
@@ -65,6 +67,24 @@ class ObjectPositions:
             object_positions=object_positions
         )
         self.mobs[mob_id].spawn_random()
+
+    def add_sattelite_mob(self, img, screen, object_positions, coords):
+        self.mobs[str(uuid.uuid4())] = SatteliteMob(
+            img=img,
+            screen=screen,
+            mob_id=str(uuid.uuid4()),
+            object_positions=object_positions,
+            spawn_coords=coords,
+            orientation=self.player_obj.orientation - 90
+        )
+        self.mobs[str(uuid.uuid4())] = SatteliteMob(
+            img=img,
+            screen=screen,
+            mob_id=str(uuid.uuid4()),
+            object_positions=object_positions,
+            spawn_coords=coords,
+            orientation=self.player_obj.orientation + 90
+        )
 
     def add_big_mob(self, img, screen, object_positions):
         mob_id = str(uuid.uuid4())
@@ -190,6 +210,12 @@ class ObjectPositions:
         for m_id in mobs:
             if m_id in self.mobs:
                 self.mobs[m_id].destroy_ship(img=EXPLOSION_IMAGE)
+                if self.mobs[m_id].type == 'big':
+                    print(self.mobs[m_id].pos_x, self.mobs[m_id].pos_y)
+                    self.add_sattelite_mob(img=SATTELITE_MOB_IMAGE,
+                                           screen=self.screen,
+                                           object_positions=self,
+                                           coords=(self.mobs[m_id].pos_x, self.mobs[m_id].pos_y))
 
         for b_id in collided_bombs:
             if b_id in self.bombs:

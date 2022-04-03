@@ -31,6 +31,8 @@ class BaseMob(BaseSpaceship, BaseTileBackground):
         self.abs_pos_x = 0
         self.abs_pos_y = 0
         self.mob_id = mob_id
+        self.speed = MOB_SPEED
+        self.type = 'std'
 
         self.is_destroyed = False
         self.destroy_count = 0
@@ -53,10 +55,10 @@ class BaseMob(BaseSpaceship, BaseTileBackground):
         self.pos_y = pos_y
 
     def spawn(self, spawn_coords: tuple = (0, 0)):
-        """
-        Потом тут будет логика спавна корабля по триггеру
-        """
-        pass
+        self.pos_x = spawn_coords[0]
+        self.pos_y = spawn_coords[1]
+        self.abs_pos_x = self.pos_x
+        self.abs_pos_y = self.pos_y
 
     def spawn_random(self):
         """
@@ -78,7 +80,7 @@ class BaseMob(BaseSpaceship, BaseTileBackground):
         pos_x = self.abs_pos_x
         pos_y = self.abs_pos_y
 
-        ship_image, new_rect = rot_center(self.img, self.orientation, self.pos_x-20, self.pos_y-24)
+        ship_image, new_rect = rot_center(self.img, self.orientation, self.pos_x-20, self.pos_y-24) # T ODO: считать ширину/высоту картинки
         self.screen.blit(ship_image, (pos_x - int(new_rect.width / 2), pos_y - int(new_rect.height / 2)))
 
     def is_player_near(self):
@@ -149,7 +151,7 @@ class BaseMob(BaseSpaceship, BaseTileBackground):
         orientation = self.smooth_rotate_to_angle(angle, self.orientation)
 
         self.set_orientation(orientation)
-        left, right, up, down = self.calculate_move(MOB_SPEED)
+        left, right, up, down = self.calculate_move(self.speed)
         self.move(left, right, up, down)
 
     def angle_to_player(self):
