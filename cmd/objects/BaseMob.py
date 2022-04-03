@@ -146,7 +146,9 @@ class BaseMob(BaseSpaceship, BaseTileBackground):
 
     def move_to_player(self):
         angle = - int(math.degrees(self.angle_to_player()) + 90)
-        self.set_orientation(angle)
+        orientation = self.smooth_rotate_to_angle(angle, self.orientation)
+
+        self.set_orientation(orientation)
         left, right, up, down = self.calculate_move(MOB_SPEED)
         self.move(left, right, up, down)
 

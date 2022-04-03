@@ -111,3 +111,28 @@ class BaseSpaceship:
         self.prev_direction = (left, right, up, down)
 
         return left, right, up, down
+
+    @staticmethod
+    def smooth_rotate_to_angle(angle, orientation):
+        if orientation != angle:
+            if orientation > 360:
+                orientation -= 360
+            if orientation < 0:
+                orientation += 360
+
+            if angle < 0:
+                angle += 360
+            if angle > 360:
+                angle -= 360
+
+            if angle < orientation - 5:
+                if orientation - angle < 180:
+                    orientation -= 5
+                else:
+                    orientation += 5
+            elif angle > orientation + 5:
+                if angle - orientation < 180:
+                    orientation += 5
+                else:
+                    orientation -= 5
+        return orientation
