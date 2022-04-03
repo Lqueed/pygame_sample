@@ -1,10 +1,12 @@
 import random
 import uuid
+import math
 
 from cmd.helpers.ObjectHelper import rot_center, random_fn
 from cmd.objects.BaseShot import BaseShot
 from cmd.objects.PowerShot import PowerShot
 from cmd.objects.BaseMob import BaseMob
+from cmd.objects.BigMob import BigMob
 from cmd.objects.BaseBomb import BaseBomb
 from cmd.objects.BaseBonus import BaseBonus
 from cmd.config.config import (
@@ -16,7 +18,8 @@ from cmd.config.config import (
     ARROWS_TO_MOB,
     BOMB_EXPLOSION_RADIUS,
     BONUS_IMG,
-    BONUS_SPAWN_CHANCE
+    BONUS_SPAWN_CHANCE,
+    BIG_MOB_IMG
 )
 
 
@@ -56,6 +59,16 @@ class ObjectPositions:
     def add_mob(self, img, screen, object_positions):
         mob_id = str(uuid.uuid4())
         self.mobs[mob_id] = BaseMob(
+            img=img,
+            screen=screen,
+            mob_id=mob_id,
+            object_positions=object_positions
+        )
+        self.mobs[mob_id].spawn_random()
+
+    def add_big_mob(self, img, screen, object_positions):
+        mob_id = str(uuid.uuid4())
+        self.mobs[mob_id] = BigMob(
             img=img,
             screen=screen,
             mob_id=mob_id,
@@ -293,9 +306,14 @@ class ObjectPositions:
         if len(self.mobs) == 0:
             if random.randint(0, SPAWN_RATE) == 0:
                 for _ in range(3):
-                    self.add_mob(img=BASE_MOB_IMG,
-                                 screen=self.screen,
-                                 object_positions=self)
+                    if random.randint(0, 1):
+                        self.add_mob(img=BASE_MOB_IMG,
+                                     screen=self.screen,
+                                     object_positions=self)
+                    else:
+                        self.add_big_mob(img=BIG_MOB_IMG,
+                                         screen=self.screen,
+                                         object_positions=self)
 
     def spawn_bonus_random(self):
         if random.randint(0, SPAWN_RATE) == 0:
@@ -324,3 +342,23 @@ class ObjectPositions:
 
     def check_active_bonuses(self):
         self.player_obj.check_active_bonuses()
+
+    def get_mobs_angle(self, mob1_id, mob2_id):
+        angle = math.atan2(self.mobs[mob1_id].pos_y - self.mobs[mob2_id].pos_y,
+                           self.mobs[mob1_id].pos_x - self.mobs[mob2_id].pos_x)
+        print(angle)
+
+    # DEPRECATED
+    # def move_mobs_group(self):
+    #     mob_coords_arr = {}
+    #     for mob1_id, mob1 in self.mobs.items():
+    #         for mob2_id, mob2 in self.mobs.items():
+    #             if mob1_id != mob2_id and\
+    #                     abs(mob1.pos_x - mob2.pos_x) <= GROUP_DISTANCE and \
+    #                     abs(mob1.pos_y - mob2.pos_y) <= GROUP_DISTANCE and \
+    #                     not mob1.group_move:
+    #                 if mob2 not in mob_coords_arr or mob_coords_arr[mob2_id] != mob1_id:
+    #                     mob_coords_arr[mob1_id] = mob2_id
+    #     for mob_id in mob_coords_arr:
+    #         angle = self.get_mobs_angle(mob_id, mob_coords_arr[mob_id])
+            # self.mobs[mob_id].group_move(angle)

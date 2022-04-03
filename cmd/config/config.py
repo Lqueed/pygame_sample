@@ -15,6 +15,7 @@ ARROWS_TO_MOB = True
 SHOT_SPEED = 15
 POWER_SHOT_SPEED = 20
 BONUS_SPAWN_CHANCE = 10
+GROUP_DISTANCE = 50
 
 img_folder = "png"
 sounds_folder = "sounds"
@@ -24,6 +25,7 @@ SHOT_IMG = os.path.join(img_folder, "shot.png")
 POWER_SHOT_IMG = os.path.join(img_folder, "shot_yellow.png")
 BACKGOUND_TILE_IMG = os.path.join(img_folder, "tile_bg_blue.jpg")
 BASE_MOB_IMG = os.path.join(img_folder, "x-wing-small-inverted.png")
+BIG_MOB_IMG = os.path.join(img_folder, "enemy_mid.png")
 BASE_PLAYER_IMG = os.path.join(img_folder, "x-wing-small.png")
 EXPLOSION_IMAGE = os.path.join(img_folder, "explosion.png")
 BOMB_IMG = os.path.join(img_folder, "bomb.png")
