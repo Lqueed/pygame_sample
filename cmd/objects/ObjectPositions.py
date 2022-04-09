@@ -237,6 +237,7 @@ class ObjectPositions:
         for m_id in self.mobs:
             if self.mobs[m_id].destroy_count >= 60:
                 to_delete_mobs.append(m_id)
+                self.stats.increase_score(10)
         for m_id in to_delete_mobs:
             if spawn_bonus:
                 self.add_bonus(img=BONUS_IMG,

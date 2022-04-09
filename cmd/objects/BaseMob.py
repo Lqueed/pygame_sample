@@ -80,7 +80,7 @@ class BaseMob(BaseSpaceship, BaseTileBackground):
         pos_x = self.abs_pos_x
         pos_y = self.abs_pos_y
 
-        ship_image, new_rect = rot_center(self.img, self.orientation, self.pos_x-20, self.pos_y-24) # T ODO: считать ширину/высоту картинки
+        ship_image, new_rect = rot_center(self.img, self.orientation, self.pos_x-20, self.pos_y-24) # TO DO: считать ширину/высоту картинки
         self.screen.blit(ship_image, (pos_x - int(new_rect.width / 2), pos_y - int(new_rect.height / 2)))
 
     def is_player_near(self):
