@@ -23,7 +23,6 @@ from cmd.config.config import (
 Все методы содержащие в названии move - просчитывают передвижение объектов
 """
 
-
 # константы и объект игры
 display_size = (RES_X, RES_Y)
 
