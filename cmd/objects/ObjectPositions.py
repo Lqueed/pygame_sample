@@ -10,6 +10,7 @@ from cmd.objects.BigMob import BigMob
 from cmd.objects.SatteliteMob import SatteliteMob
 from cmd.objects.BaseBomb import BaseBomb
 from cmd.objects.BaseBonus import BaseBonus
+from cmd.objects.BaseMinimap import Minimap
 from cmd.config.config import (
     BASE_MOB_IMG,
     SPAWN_RATE,
@@ -21,7 +22,8 @@ from cmd.config.config import (
     BONUS_IMG,
     BONUS_SPAWN_CHANCE,
     BIG_MOB_IMG,
-    SATTELITE_MOB_IMAGE
+    SATTELITE_MOB_IMAGE,
+    MINIMAP
 )
 
 
@@ -44,6 +46,7 @@ class ObjectPositions:
         self.mob_x_size_small = 24
         self.mob_y_size_small = 24
         self.screen = screen
+        self.minimap = Minimap(screen=self.screen)
 
     def set_position(self, object_type, pos_x, pos_y, mob_id=0):
         if object_type == 'player':
@@ -196,6 +199,8 @@ class ObjectPositions:
         self.draw_mobs()
         self.draw_player()
         self.stats.draw()
+        if MINIMAP:
+            self.minimap.draw(self.mobs)
 
         self.check_active_bonuses()
 

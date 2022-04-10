@@ -17,6 +17,7 @@ SHOT_SPEED = 15
 POWER_SHOT_SPEED = 20
 BONUS_SPAWN_CHANCE = 10
 GROUP_DISTANCE = 50
+MINIMAP = 1
 
 img_folder = "png"
 sounds_folder = "sounds"
