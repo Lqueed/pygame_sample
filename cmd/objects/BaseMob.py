@@ -49,6 +49,7 @@ class BaseMob(BaseSpaceship, BaseTileBackground):
         self.sleep_frames_count = 0
 
         self.future_move_orientation = None
+        self.group_move_angle = None
 
     def set_position(self, pos_x, pos_y):
         self.pos_x = pos_x
@@ -90,7 +91,7 @@ class BaseMob(BaseSpaceship, BaseTileBackground):
 
     def move_mob(self):
         """
-        Движение корабля в рандомных направлениях
+        Движение корабля
         """
         if self.is_destroyed:
             # таймер до полного удаления
@@ -109,7 +110,12 @@ class BaseMob(BaseSpaceship, BaseTileBackground):
         if self.random_moving:
             # если в движении - двигаем
             if self.future_move_orientation is not None:
-                self.set_orientation(self.future_move_orientation)
+                if self.group_move_angle is not None:
+                    angle = self.group_move_angle
+                    orientation = self.smooth_rotate_to_angle(angle, self.orientation)
+                    self.set_orientation(orientation)
+                else:
+                    self.set_orientation(self.future_move_orientation)
             self.drift_frames_count += 1
             self.move(left=self.random_moving_speed_direction[0],
                       right=self.random_moving_speed_direction[1],
@@ -118,6 +124,7 @@ class BaseMob(BaseSpaceship, BaseTileBackground):
             if self.drift_frames_count >= self.drift_frames_limit:
                 self.random_moving = False
                 self.drift_frames_count = 0
+            self.group_move_angle = None
 
         else:
             # если не в движении - считаем куда двигать
@@ -147,12 +154,16 @@ class BaseMob(BaseSpaceship, BaseTileBackground):
             self.random_moving = True
 
     def move_to_player(self):
-        angle = - int(math.degrees(self.angle_to_player()) + 90)
+        if self.group_move_angle is not None:
+            angle = self.group_move_angle
+        else:
+            angle = - int(math.degrees(self.angle_to_player()) + 90)
         orientation = self.smooth_rotate_to_angle(angle, self.orientation)
 
         self.set_orientation(orientation)
         left, right, up, down = self.calculate_move(self.speed)
         self.move(left, right, up, down)
+        self.group_move_angle = None
 
     def angle_to_player(self):
         player_coords = self.object_positions.player
@@ -200,3 +211,6 @@ class BaseMob(BaseSpaceship, BaseTileBackground):
         self.set_ship_img(img)
         self.is_destroyed = True
         self.object_positions.sounds.sound_explosion_short()
+
+    def group_move(self, angle):
+        self.group_move_angle = angle

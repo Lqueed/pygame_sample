@@ -74,14 +74,18 @@ class ObjectPositions:
 
     def add_mob_group(self, count: int = 3):
         mob_id = self.add_mob(img=BASE_MOB_IMG, screen=self.screen, object_positions=self)
-
         pos_x_main = self.mobs[mob_id].abs_pos_x
         pos_y_main = self.mobs[mob_id].abs_pos_y
 
+        spawned_big = False
         for i in range(count - 1):
             angle = random.randint(0, 360) - i * (360/count)
             new_coords = (pos_x_main + 200 * math.cos(angle), pos_y_main + 200 * math.sin(angle))
-            self.add_mob(img=BASE_MOB_IMG, screen=self.screen, object_positions=self, spawn_coords=new_coords)
+            if not spawned_big and random.randint(0, 1):
+                self.add_big_mob(img=BIG_MOB_IMG, screen=self.screen, object_positions=self, spawn_coords=new_coords)
+                spawned_big = True
+            else:
+                self.add_mob(img=BASE_MOB_IMG, screen=self.screen, object_positions=self, spawn_coords=new_coords)
 
     def add_sattelite_mob(self, img, screen, object_positions, coords):
         self.mobs[str(uuid.uuid4())] = SatteliteMob(
@@ -101,15 +105,15 @@ class ObjectPositions:
             orientation=self.player_obj.orientation + 90
         )
 
-    def add_big_mob(self, img, screen, object_positions):
+    def add_big_mob(self, img, screen, object_positions, spawn_coords=None):
         mob_id = str(uuid.uuid4())
         self.mobs[mob_id] = BigMob(
             img=img,
             screen=screen,
             mob_id=mob_id,
-            object_positions=object_positions
+            object_positions=object_positions,
+            spawn_coords=spawn_coords,
         )
-        self.mobs[mob_id].spawn_random()
 
     def add_player(self, player):
         self.player_obj = player
@@ -228,7 +232,6 @@ class ObjectPositions:
             if m_id in self.mobs:
                 self.mobs[m_id].destroy_ship(img=EXPLOSION_IMAGE)
                 if self.mobs[m_id].type == 'big':
-                    print(self.mobs[m_id].pos_x, self.mobs[m_id].pos_y)
                     self.add_sattelite_mob(img=SATTELITE_MOB_IMAGE,
                                            screen=self.screen,
                                            object_positions=self,
@@ -243,6 +246,7 @@ class ObjectPositions:
             self.bonuses.pop(b_id, None)
 
         self.destroy_timer()
+        self.move_mobs_group()
 
     def destroy_timer(self):
         """
@@ -382,19 +386,20 @@ class ObjectPositions:
     def get_mobs_angle(self, mob1_id, mob2_id):
         angle = math.atan2(self.mobs[mob1_id].pos_y - self.mobs[mob2_id].pos_y,
                            self.mobs[mob1_id].pos_x - self.mobs[mob2_id].pos_x)
-        print(angle)
+        return angle
 
     # DEPRECATED
-    # def move_mobs_group(self):
-    #     mob_coords_arr = {}
-    #     for mob1_id, mob1 in self.mobs.items():
-    #         for mob2_id, mob2 in self.mobs.items():
-    #             if mob1_id != mob2_id and\
-    #                     abs(mob1.pos_x - mob2.pos_x) <= GROUP_DISTANCE and \
-    #                     abs(mob1.pos_y - mob2.pos_y) <= GROUP_DISTANCE and \
-    #                     not mob1.group_move:
-    #                 if mob2 not in mob_coords_arr or mob_coords_arr[mob2_id] != mob1_id:
-    #                     mob_coords_arr[mob1_id] = mob2_id
-    #     for mob_id in mob_coords_arr:
-    #         angle = self.get_mobs_angle(mob_id, mob_coords_arr[mob_id])
-            # self.mobs[mob_id].group_move(angle)
+    def move_mobs_group(self):
+        GROUP_DISTANCE = 100
+        mob_coords_arr = {}
+        for mob1_id, mob1 in self.mobs.items():
+            for mob2_id, mob2 in self.mobs.items():
+                if mob1_id != mob2_id and\
+                        abs(mob1.abs_pos_x - mob2.abs_pos_x) <= GROUP_DISTANCE and \
+                        abs(mob1.abs_pos_y - mob2.abs_pos_y) <= GROUP_DISTANCE:
+                    if (mob2_id not in mob_coords_arr or mob_coords_arr[mob2_id] != mob1_id) \
+                            and mob1_id not in mob_coords_arr:
+                        mob_coords_arr[mob1_id] = mob2_id
+        for mob_id in mob_coords_arr:
+            angle = self.get_mobs_angle(mob_id, mob_coords_arr[mob_id])
+            self.mobs[mob_id].group_move(angle)
