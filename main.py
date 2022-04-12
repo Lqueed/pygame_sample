@@ -50,20 +50,12 @@ sound_helper = SoundHelper()
 object_positions = ObjectPositions(screen=screen, stats=main_stats, sounds=sound_helper)
 stats = object_positions.stats
 
-# синглтон игрока - будет один
-# player = Player(img="png/x-wing-small.png",
-#                 screen=screen,
-#                 object_positions=object_positions)
-
 # объект фона - один
 bg = TileBackground(img=BACKGOUND_TILE_IMG,
                     screen=screen)
 
 # спавним мобов сколько нужно
-for _ in range(1):
-    object_positions.add_mob(img=BASE_MOB_IMG,
-                             screen=screen,
-                             object_positions=object_positions)
+object_positions.add_mob_group()
 
 object_positions.add_player(
     Player(img=BASE_PLAYER_IMG,

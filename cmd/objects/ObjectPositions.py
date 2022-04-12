@@ -61,15 +61,27 @@ class ObjectPositions:
         if object_type == 'mob':
             self.mobs.pop(obj_id, None)
 
-    def add_mob(self, img, screen, object_positions):
+    def add_mob(self, img, screen, object_positions, spawn_coords=None):
         mob_id = str(uuid.uuid4())
         self.mobs[mob_id] = BaseMob(
             img=img,
             screen=screen,
             mob_id=mob_id,
-            object_positions=object_positions
+            object_positions=object_positions,
+            spawn_coords=spawn_coords,
         )
-        self.mobs[mob_id].spawn_random()
+        return mob_id
+
+    def add_mob_group(self, count: int = 3):
+        mob_id = self.add_mob(img=BASE_MOB_IMG, screen=self.screen, object_positions=self)
+
+        pos_x_main = self.mobs[mob_id].abs_pos_x
+        pos_y_main = self.mobs[mob_id].abs_pos_y
+
+        for i in range(count - 1):
+            angle = random.randint(0, 360) - i * (360/count)
+            new_coords = (pos_x_main + 200 * math.cos(angle), pos_y_main + 200 * math.sin(angle))
+            self.add_mob(img=BASE_MOB_IMG, screen=self.screen, object_positions=self, spawn_coords=new_coords)
 
     def add_sattelite_mob(self, img, screen, object_positions, coords):
         self.mobs[str(uuid.uuid4())] = SatteliteMob(
@@ -337,15 +349,7 @@ class ObjectPositions:
     def spawn_more_mobs_random(self):
         if len(self.mobs) == 0:
             if random.randint(0, SPAWN_RATE) == 0:
-                for _ in range(3):
-                    if random.randint(0, 1):
-                        self.add_mob(img=BASE_MOB_IMG,
-                                     screen=self.screen,
-                                     object_positions=self)
-                    else:
-                        self.add_big_mob(img=BIG_MOB_IMG,
-                                         screen=self.screen,
-                                         object_positions=self)
+                self.add_mob_group()
 
     def spawn_bonus_random(self):
         if random.randint(0, SPAWN_RATE) == 0:

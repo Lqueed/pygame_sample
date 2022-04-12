@@ -1,14 +1,4 @@
-from cmd.helpers.ObjectHelper import rot_center
 from BaseMob import BaseMob
-import random
-import math
-import pygame
-from cmd.config.config import (
-    RES_X,
-    RES_Y,
-    AGGRESIVE_DISTANSE,
-    MOB_SPEED
-)
 
 
 class BigMob(BaseMob):
