@@ -396,7 +396,8 @@ class ObjectPositions:
             for mob2_id, mob2 in self.mobs.items():
                 if mob1_id != mob2_id and\
                         abs(mob1.abs_pos_x - mob2.abs_pos_x) <= GROUP_DISTANCE and \
-                        abs(mob1.abs_pos_y - mob2.abs_pos_y) <= GROUP_DISTANCE:
+                        abs(mob1.abs_pos_y - mob2.abs_pos_y) <= GROUP_DISTANCE and \
+                        mob1.type != 'sattelite':
                     if (mob2_id not in mob_coords_arr or mob_coords_arr[mob2_id] != mob1_id) \
                             and mob1_id not in mob_coords_arr:
                         mob_coords_arr[mob1_id] = mob2_id
