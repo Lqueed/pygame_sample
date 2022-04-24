@@ -12,7 +12,7 @@ from cmd.config.config import (
 )
 
 
-class BaseMob(BaseSpaceship, BaseTileBackground):
+class BaseMob(BaseSpaceship):
     """
     Базовый класс для всех мобов - хранит состояние, координаты и id
     Наследуется в т.ч. от фона - для расчета движения мобов вместе с фоном

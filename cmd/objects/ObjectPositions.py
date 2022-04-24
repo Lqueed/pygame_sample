@@ -11,6 +11,7 @@ from cmd.objects.SatteliteMob import SatteliteMob
 from cmd.objects.BaseBomb import BaseBomb
 from cmd.objects.BaseBonus import BaseBonus
 from cmd.objects.BaseMinimap import Minimap
+from cmd.objects.StarDestroyerBoss import StarDestroyer
 from cmd.config.config import (
     BASE_MOB_IMG,
     SPAWN_RATE,
@@ -23,7 +24,8 @@ from cmd.config.config import (
     BONUS_SPAWN_CHANCE,
     BIG_MOB_IMG,
     SATTELITE_MOB_IMAGE,
-    MINIMAP
+    MINIMAP,
+    STAR_DESTROYER_IMG,
 )
 
 
@@ -41,12 +43,25 @@ class ObjectPositions:
         self.shots = {}
         self.bombs = {}
         self.bonuses = {}
+        self.bosses = {}
         self.player_x_size = 20  # mock
         self.player_y_size = 20  # mock
         self.mob_x_size_small = 24
         self.mob_y_size_small = 24
         self.screen = screen
         self.minimap = Minimap(screen=self.screen)
+
+        self.add_boss()
+        
+    def add_boss(self):
+        boss_id = str(uuid.uuid4())
+        self.bosses[boss_id] = StarDestroyer(
+            img=STAR_DESTROYER_IMG,
+            screen=self.screen,
+            boss_id=boss_id,
+            object_positions=self,
+        )
+        return boss_id
 
     def set_position(self, object_type, pos_x, pos_y, mob_id=0):
         if object_type == 'player':
@@ -191,6 +206,8 @@ class ObjectPositions:
             bomb_obj.move(left, right, up, down)
         for bonus_id, bonus_obj in self.bonuses.items():
             bonus_obj.move(left, right, up, down)
+        for boss_id, boss_obj in self.bosses.items():
+            boss_obj.move(left, right, up, down)
 
     def draw_player(self):
         self.player_obj.draw()
@@ -201,6 +218,10 @@ class ObjectPositions:
             if ARROWS_TO_MOB and not mob.is_destroyed:
                 mob.draw_line_to_player()
 
+    def draw_bosses(self):
+        for _, boss in self.bosses.items():
+            boss.draw()
+
     def draw_bombs(self):
         for _, bomb in self.bombs.items():
             bomb.draw_bomb()
@@ -209,7 +230,13 @@ class ObjectPositions:
         for _, bonus in self.bonuses.items():
             bonus.draw_bonus()
 
+    def draw_shots(self):
+        for _, shot in self.shots.items():
+            shot.draw_shot()
+
     def draw_all(self):
+        self.draw_bosses()
+        self.draw_shots()
         self.draw_bombs()
         self.draw_bonuses()
         self.draw_mobs()
@@ -245,6 +272,13 @@ class ObjectPositions:
         for b_id in bonuses:
             self.bonuses.pop(b_id, None)
 
+        for _, boss in self.bosses.items():
+            if boss.detect_collisions_pl(player_obj=self.player,
+                                         player_x_size=self.player_x_size,
+                                         player_y_size=self.player_y_size):
+                self.player_obj.destroy_player()
+            boss.detect_collisions_shots(object_positions=self)
+
         self.destroy_timer()
         self.move_mobs_group()
 
@@ -266,6 +300,17 @@ class ObjectPositions:
                                pos_y=self.mobs[m_id].pos_y)
                 spawn_bonus = False
             self.mobs.pop(m_id, None)
+
+        for _, boss in self.bosses.items():
+            to_delete = boss.destroy_timer()
+            if spawn_bonus:
+                for turret_id in to_delete:
+                    self.add_bonus(img=BONUS_IMG,
+                                   pos_x=boss.turrets[turret_id].pos_x,
+                                   pos_y=boss.turrets[turret_id].pos_y)
+                    spawn_bonus = False
+                    break
+            boss.delete_turrets(to_delete)
 
         to_delete_bombs = []
         for b_id in self.bombs:
@@ -388,7 +433,6 @@ class ObjectPositions:
                            self.mobs[mob1_id].pos_x - self.mobs[mob2_id].pos_x)
         return angle
 
-    # DEPRECATED
     def move_mobs_group(self):
         GROUP_DISTANCE = 100
         mob_coords_arr = {}

@@ -57,7 +57,6 @@ class BaseShot:
             self.pos_y += down
 
         self.age += 1
-        self.draw_shot()
 
     def draw_shot(self):
         self.screen.blit(self.img, (self.pos_x, self.pos_y))
