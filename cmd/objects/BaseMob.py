@@ -23,7 +23,8 @@ class BaseMob(BaseSpaceship):
                  object_positions,
                  mob_id=0,
                  spawn_coords=(),
-                 aggressive=False):
+                 aggressive=False,
+                 aggressive_distance=AGGRESIVE_DISTANSE):
         super().__init__(screen=screen, img=img, object_positions=object_positions)
         self.aggressive = aggressive
         self.pos_x = 0
@@ -36,6 +37,7 @@ class BaseMob(BaseSpaceship):
 
         self.is_destroyed = False
         self.destroy_count = 0
+        self.aggressive_distance = aggressive_distance
 
         if not spawn_coords:
             self.spawn_random()
@@ -87,7 +89,7 @@ class BaseMob(BaseSpaceship):
     def is_player_near(self):
         player_coords = self.object_positions.player
         dist = int(math.sqrt((self.pos_x - player_coords[0]) ** 2 + (self.pos_y - player_coords[1]) ** 2))
-        return dist <= AGGRESIVE_DISTANSE
+        return dist <= self.aggressive_distance
 
     def move_mob(self):
         """

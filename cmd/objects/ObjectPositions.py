@@ -44,6 +44,7 @@ class ObjectPositions:
         self.bombs = {}
         self.bonuses = {}
         self.bosses = {}
+        self.enemy_shots = {}
         self.player_x_size = 20  # mock
         self.player_y_size = 20  # mock
         self.mob_x_size_small = 24
@@ -189,7 +190,7 @@ class ObjectPositions:
         else:
             self.bonuses[bonus_id].spawn_random()
 
-    def move_shots(self):
+    def move_shots(self, left, right, up, down):
         to_delete = []
         for shot_id, shot in self.shots.items():
             shot.move()
@@ -197,6 +198,13 @@ class ObjectPositions:
                 to_delete.append(shot_id)
         for shot_id in to_delete:
             self.shots.pop(shot_id, None)
+
+        for shot_id, shot in self.enemy_shots.items():
+            shot.move(left, right, up, down)
+            if shot.age >= 180:
+                to_delete.append(shot_id)
+        for shot_id in to_delete:
+            self.enemy_shots.pop(shot_id, None)
 
     def move_objects(self, left, right, up, down):
         for mob_id, mob_obj in self.mobs.items():
@@ -232,6 +240,8 @@ class ObjectPositions:
 
     def draw_shots(self):
         for _, shot in self.shots.items():
+            shot.draw_shot()
+        for _, shot in self.enemy_shots.items():
             shot.draw_shot()
 
     def draw_all(self):
@@ -332,6 +342,18 @@ class ObjectPositions:
                 and not coords.is_destroyed:
                 collided.append(mob_id)
                 self.player_obj.destroy_player()
+
+        shot_to_del = []
+        for shot_id, coords in self.enemy_shots.items():
+            if (coords.pos_x <= self.player[0] + self.player_x_size and \
+                coords.pos_x >= self.player[0] - self.player_x_size) \
+                    and (coords.pos_y <= self.player[1] + self.player_y_size and \
+                         coords.pos_y >= self.player[1] - self.player_y_size):
+                shot_to_del.append(shot_id)
+                self.player_obj.destroy_player()
+        for shot_id in shot_to_del:
+            self.enemy_shots.pop(shot_id, None)
+
         return collided
 
     def detect_collisions_shots(self):

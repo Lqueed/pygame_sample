@@ -9,7 +9,7 @@ class BaseShot:
     """
     Базовый класс для выстрелов - хранит состояние, координаты, угол, скорость и id
     """
-    def __init__(self, id, object_positions, angle, pos_x, pos_y, screen):
+    def __init__(self, id, object_positions, angle, pos_x, pos_y, screen, shot_speed=SHOT_SPEED):
         self.id = id
         self.img = None
         self.object_positions = object_positions
@@ -17,7 +17,7 @@ class BaseShot:
         self.pos_x = pos_x
         self.pos_y = pos_y
         self.screen = screen
-        self.speed = SHOT_SPEED
+        self.speed = shot_speed
         self.age = 0
         self.set_img(SHOT_IMG)
         self.power = False

@@ -148,7 +148,7 @@ while run:
 
     # двигаем мобов и выстрелы
     object_positions.move_objects(left, right, up, down)
-    object_positions.move_shots()
+    object_positions.move_shots(left, right, up, down)
 
     # ищем пересечения хитбоксов мобов с игроком и выстрелами
     object_positions.find_collisions()

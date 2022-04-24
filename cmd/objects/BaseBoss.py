@@ -4,7 +4,8 @@ from cmd.config.config import (
     RES_X,
     RES_Y,
     TURRET_PNG,
-    EXPLOSION_IMAGE
+    EXPLOSION_IMAGE,
+    TURRET_AGGRESIVE_DISTANSE
 )
 import pygame
 import uuid
@@ -78,6 +79,7 @@ class BaseBoss:
                 object_positions=self.object_positions,
                 img=TURRET_PNG,
                 screen=self.screen,
+                aggressive_distance=TURRET_AGGRESIVE_DISTANSE,
             )
             turret_obj.spawn(
                 spawn_coords=(tur_coords[0] + self.abs_pos_x + turret_obj.width/2,
