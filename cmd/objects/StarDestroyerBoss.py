@@ -27,8 +27,3 @@ class StarDestroyer(BaseBoss):
             (275, 557),
             (691, 557),
         ]
-
-        self.spawn() ##
-        self.spawn_turrets()
-
-

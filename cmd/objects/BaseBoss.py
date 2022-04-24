@@ -28,6 +28,7 @@ class BaseBoss:
         self.boss_id = boss_id
         self.turrets = {}
         self.turret_coords = []
+        self.is_defeated = False
 
         self.width = self.img.get_rect().size[0]
         self.height = self.img.get_rect().size[1]
@@ -42,6 +43,8 @@ class BaseBoss:
         self.abs_pos_x = self.pos_x
         self.abs_pos_y = self.pos_y
 
+        self.spawn_turrets()
+
     def draw(self):
         pos_x = self.abs_pos_x
         pos_y = self.abs_pos_y
@@ -49,6 +52,9 @@ class BaseBoss:
 
         for _, turret in self.turrets.items():
             turret.draw()
+
+        if not self.turrets:
+            self.is_defeated = True
 
     def move(self,
              left=None,

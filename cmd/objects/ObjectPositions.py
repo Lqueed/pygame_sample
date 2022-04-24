@@ -3,6 +3,7 @@ import uuid
 import math
 
 from cmd.helpers.ObjectHelper import rot_center, random_fn
+from cmd.objects.BaseSpaceship import BaseSpaceship
 from cmd.objects.BaseShot import BaseShot
 from cmd.objects.PowerShot import PowerShot
 from cmd.objects.BaseMob import BaseMob
@@ -43,7 +44,7 @@ class ObjectPositions:
         self.shots = {}
         self.bombs = {}
         self.bonuses = {}
-        self.bosses = {}
+        self.boss = None
         self.enemy_shots = {}
         self.player_x_size = 20  # mock
         self.player_y_size = 20  # mock
@@ -51,18 +52,19 @@ class ObjectPositions:
         self.mob_y_size_small = 24
         self.screen = screen
         self.minimap = Minimap(screen=self.screen)
-
-        self.add_boss()
+        self.kill_count = 0
+        self.boss_level = False
+        self.boss_ready = False
         
-    def add_boss(self):
+    def add_boss(self, spawn_coords=(0, 0)):
         boss_id = str(uuid.uuid4())
-        self.bosses[boss_id] = StarDestroyer(
+        self.boss = StarDestroyer(
             img=STAR_DESTROYER_IMG,
             screen=self.screen,
             boss_id=boss_id,
             object_positions=self,
         )
-        return boss_id
+        return self.boss
 
     def set_position(self, object_type, pos_x, pos_y, mob_id=0):
         if object_type == 'player':
@@ -214,8 +216,12 @@ class ObjectPositions:
             bomb_obj.move(left, right, up, down)
         for bonus_id, bonus_obj in self.bonuses.items():
             bonus_obj.move(left, right, up, down)
-        for boss_id, boss_obj in self.bosses.items():
-            boss_obj.move(left, right, up, down)
+        if self.boss:
+            self.boss.move(left, right, up, down)
+
+        self.spawn_boss_level()
+        if not self.boss_level:
+            self.spawn_more_mobs_random()
 
     def draw_player(self):
         self.player_obj.draw()
@@ -227,8 +233,8 @@ class ObjectPositions:
                 mob.draw_line_to_player()
 
     def draw_bosses(self):
-        for _, boss in self.bosses.items():
-            boss.draw()
+        if self.boss:
+            self.boss.draw()
 
     def draw_bombs(self):
         for _, bomb in self.bombs.items():
@@ -254,6 +260,7 @@ class ObjectPositions:
         self.stats.draw()
         if MINIMAP:
             self.minimap.draw(self.mobs)
+        self.draw_text()
 
         self.check_active_bonuses()
 
@@ -282,12 +289,12 @@ class ObjectPositions:
         for b_id in bonuses:
             self.bonuses.pop(b_id, None)
 
-        for _, boss in self.bosses.items():
-            if boss.detect_collisions_pl(player_obj=self.player,
+        if self.boss:
+            if self.boss.detect_collisions_pl(player_obj=self.player,
                                          player_x_size=self.player_x_size,
                                          player_y_size=self.player_y_size):
                 self.player_obj.destroy_player()
-            boss.detect_collisions_shots(object_positions=self)
+            self.boss.detect_collisions_shots(object_positions=self)
 
         self.destroy_timer()
         self.move_mobs_group()
@@ -303,6 +310,8 @@ class ObjectPositions:
             if self.mobs[m_id].destroy_count >= 60:
                 to_delete_mobs.append(m_id)
                 self.stats.increase_score(10)
+                if self.mobs[m_id].type != 'sattelite':
+                    self.kill_count += 1
         for m_id in to_delete_mobs:
             if spawn_bonus:
                 self.add_bonus(img=BONUS_IMG,
@@ -311,16 +320,16 @@ class ObjectPositions:
                 spawn_bonus = False
             self.mobs.pop(m_id, None)
 
-        for _, boss in self.bosses.items():
-            to_delete = boss.destroy_timer()
+        if self.boss:
+            to_delete = self.boss.destroy_timer()
             if spawn_bonus:
                 for turret_id in to_delete:
                     self.add_bonus(img=BONUS_IMG,
-                                   pos_x=boss.turrets[turret_id].pos_x,
-                                   pos_y=boss.turrets[turret_id].pos_y)
+                                   pos_x=self.boss.turrets[turret_id].pos_x,
+                                   pos_y=self.boss.turrets[turret_id].pos_y)
                     spawn_bonus = False
                     break
-            boss.delete_turrets(to_delete)
+            self.boss.delete_turrets(to_delete)
 
         to_delete_bombs = []
         for b_id in self.bombs:
@@ -418,7 +427,7 @@ class ObjectPositions:
         return collided
 
     def spawn_more_mobs_random(self):
-        if len(self.mobs) == 0:
+        if len(self.mobs) == 0 and not self.boss:
             if random.randint(0, SPAWN_RATE) == 0:
                 self.add_mob_group()
 
@@ -470,3 +479,41 @@ class ObjectPositions:
         for mob_id in mob_coords_arr:
             angle = self.get_mobs_angle(mob_id, mob_coords_arr[mob_id])
             self.mobs[mob_id].group_move(angle)
+
+    def spawn_boss_level(self):
+        if self.boss_level and not self.boss_ready:
+            player_angle_rotate = BaseSpaceship.smooth_rotate_to_angle(0, orientation=self.player_obj.orientation)
+            self.player_obj.set_orientation(player_angle_rotate)
+
+            dist_pl_boss = int(math.sqrt(
+                (self.boss.pos_x - self.player[0]) ** 2 + (self.boss.pos_y - self.player[1]) ** 2
+            ))
+            if player_angle_rotate == self.player_obj.orientation and abs(dist_pl_boss) <= 2300:
+                self.boss_ready = True
+
+        if self.boss_level:
+            if self.boss.is_defeated:
+                self.kill_count = 0
+
+                player_angle_rotate = BaseSpaceship.smooth_rotate_to_angle(0, orientation=self.player_obj.orientation)
+                self.player_obj.set_orientation(player_angle_rotate)
+                dist_pl_boss = self.boss.pos_y - self.player[1]
+                if dist_pl_boss >= RES_Y:
+                    self.kill_count = 0
+                    self.boss_level = False
+                    self.boss_ready = False
+                    self.boss = None
+
+        if not self.boss_level:
+            if self.kill_count >= 10: # and not self.mobs:
+                self.kill_count = 0
+                self.boss_level = True
+                boss = self.add_boss()
+                boss.spawn(spawn_coords=(self.player[0] - boss.width/2, self.player[1]-3000))
+
+    def draw_text(self):
+        if self.boss_level and not self.boss_ready:
+            self.stats.draw_boss_prepare()
+
+        if self.boss and self.boss.is_defeated:
+            self.stats.draw_mobs_prepare()

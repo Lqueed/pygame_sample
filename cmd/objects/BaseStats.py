@@ -46,3 +46,13 @@ class BaseStats:
         myfont = pygame.font.SysFont('Arial Bold', int(RES_Y / 5))
         text_surface = myfont.render('PAUSE', False, (255, 255, 255))
         self.screen.blit(text_surface, (RES_X / 2 - int(RES_X / 7.7), RES_Y / 2 - int(RES_Y / 20)))
+
+    def draw_boss_prepare(self):
+        myfont = pygame.font.SysFont('Arial Bold', int(RES_Y / 6))
+        text_surface = myfont.render('PREPARE FOR FIGHT', False, (255, 255, 255))
+        self.screen.blit(text_surface, (RES_X / 2 - int(RES_X / 3), RES_Y / 2 - int(RES_Y / 20)))
+
+    def draw_mobs_prepare(self):
+        myfont = pygame.font.SysFont('Arial Bold', int(RES_Y / 6))
+        text_surface = myfont.render('FIGHTERS INCOMING', False, (255, 255, 255))
+        self.screen.blit(text_surface, (RES_X / 2 - int(RES_X / 3), RES_Y / 2 - int(RES_Y / 20)))
