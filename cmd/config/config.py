@@ -43,6 +43,7 @@ EXPLOSION_IMAGE = resource_path(os.path.join(img_folder, "explosion.png"))
 BOMB_IMG = resource_path(os.path.join(img_folder, "bomb.png"))
 BONUS_IMG = resource_path(os.path.join(img_folder, "bonus.png"))
 STAR_DESTROYER_IMG = resource_path(os.path.join(img_folder, "star_destroyer.png"))
+CORVETTE_IMG = resource_path(os.path.join(img_folder, "corvette.png"))
 TURRET_PNG = resource_path(os.path.join(img_folder, "tur.png"))
 
 # CONTROLS

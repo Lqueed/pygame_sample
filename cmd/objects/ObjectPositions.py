@@ -13,6 +13,7 @@ from cmd.objects.BaseBomb import BaseBomb
 from cmd.objects.BaseBonus import BaseBonus
 from cmd.objects.BaseMinimap import Minimap
 from cmd.objects.StarDestroyerBoss import StarDestroyer
+from cmd.objects.CorvetteBoss import Corvette
 from cmd.config.config import (
     BASE_MOB_IMG,
     SPAWN_RATE,
@@ -27,6 +28,7 @@ from cmd.config.config import (
     SATTELITE_MOB_IMAGE,
     MINIMAP,
     STAR_DESTROYER_IMG,
+    CORVETTE_IMG
 )
 
 
@@ -58,13 +60,21 @@ class ObjectPositions:
         
     def add_boss(self, spawn_coords=(0, 0)):
         boss_id = str(uuid.uuid4())
-        self.boss = StarDestroyer(
-            img=STAR_DESTROYER_IMG,
-            screen=self.screen,
-            boss_id=boss_id,
-            object_positions=self,
-        )
-        return self.boss
+        if random.randint(0, 1):
+            self.boss = StarDestroyer(
+                img=STAR_DESTROYER_IMG,
+                screen=self.screen,
+                boss_id=boss_id,
+                object_positions=self,
+            )
+        else:
+            self.boss = Corvette(
+                img=CORVETTE_IMG,
+                screen=self.screen,
+                boss_id=boss_id,
+                object_positions=self,
+            )
+            return self.boss
 
     def set_position(self, object_type, pos_x, pos_y, mob_id=0):
         if object_type == 'player':
