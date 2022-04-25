@@ -1,15 +1,13 @@
-from cmd.background.BaseTileBackground import BaseTileBackground
-from cmd.helpers.ObjectHelper import rot_center
 from cmd.config.config import (
-    RES_X,
-    RES_Y,
     TURRET_PNG,
     EXPLOSION_IMAGE,
-    TURRET_AGGRESIVE_DISTANSE
+    TURRET_AGGRESIVE_DISTANSE,
+    ROCKET_TURRET_PNG
 )
 import pygame
 import uuid
 from BaseTurret import BaseTurret
+from RocketTurret import RocketTurret
 
 
 class BaseBoss:
@@ -28,6 +26,7 @@ class BaseBoss:
         self.boss_id = boss_id
         self.turrets = {}
         self.turret_coords = []
+        self.rocket_turret_coords = []
         self.is_defeated = False
 
         self.width = self.img.get_rect().size[0]
@@ -90,6 +89,20 @@ class BaseBoss:
             turret_obj.spawn(
                 spawn_coords=(tur_coords[0] + self.abs_pos_x + turret_obj.width/2,
                               tur_coords[1] + self.abs_pos_y + turret_obj.height/2)
+            )
+
+        for rock_tur in self.rocket_turret_coords:
+            tur_id = uuid.uuid4()
+            turret_obj = self.turrets[tur_id] = RocketTurret(
+                id=tur_id,
+                object_positions=self.object_positions,
+                img=ROCKET_TURRET_PNG,
+                screen=self.screen,
+                aggressive_distance=TURRET_AGGRESIVE_DISTANSE,
+            )
+            turret_obj.spawn(
+                spawn_coords=(rock_tur[0] + self.abs_pos_x + turret_obj.width/2,
+                              rock_tur[1] + self.abs_pos_y + turret_obj.height/2)
             )
 
     def destroy_turrets(self, list_turrets: list):

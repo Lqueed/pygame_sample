@@ -74,7 +74,7 @@ class ObjectPositions:
                 boss_id=boss_id,
                 object_positions=self,
             )
-            return self.boss
+        return self.boss
 
     def set_position(self, object_type, pos_x, pos_y, mob_id=0):
         if object_type == 'player':
@@ -100,7 +100,7 @@ class ObjectPositions:
         )
         return mob_id
 
-    def add_mob_group(self, count: int = 3):
+    def add_mob_group(self, count: int = random.randint(2, 5)):
         mob_id = self.add_mob(img=BASE_MOB_IMG, screen=self.screen, object_positions=self)
         pos_x_main = self.mobs[mob_id].abs_pos_x
         pos_y_main = self.mobs[mob_id].abs_pos_y
@@ -239,7 +239,7 @@ class ObjectPositions:
     def draw_mobs(self):
         for _, mob in self.mobs.items():
             mob.draw()
-            if ARROWS_TO_MOB and not mob.is_destroyed:
+            if ARROWS_TO_MOB and not mob.is_destroyed and mob.type not in ['rocket']:
                 mob.draw_line_to_player()
 
     def draw_bosses(self):
@@ -498,7 +498,7 @@ class ObjectPositions:
             dist_pl_boss = int(math.sqrt(
                 (self.boss.pos_x - self.player[0]) ** 2 + (self.boss.pos_y - self.player[1]) ** 2
             ))
-            if player_angle_rotate == self.player_obj.orientation and abs(dist_pl_boss) <= 2300:
+            if player_angle_rotate == self.player_obj.orientation and abs(dist_pl_boss) <= self.boss.height * 2:
                 self.boss_ready = True
 
         if self.boss_level:

@@ -27,6 +27,8 @@ GROUP_DISTANCE = 50
 MINIMAP = 1
 TURRET_SHOOT_DELAY = 120
 TURRET_SHOT_SPEED = 5
+ROCKET_TURRET_SHOOT_DELAY = 360
+ROCKET_SHOT_SPEED = 5
 
 img_folder = "png"
 sounds_folder = "sounds"
@@ -45,6 +47,8 @@ BONUS_IMG = resource_path(os.path.join(img_folder, "bonus.png"))
 STAR_DESTROYER_IMG = resource_path(os.path.join(img_folder, "star_destroyer.png"))
 CORVETTE_IMG = resource_path(os.path.join(img_folder, "corvette.png"))
 TURRET_PNG = resource_path(os.path.join(img_folder, "tur.png"))
+ROCKET_TURRET_PNG = resource_path(os.path.join(img_folder, "rocket_tur.png"))
+ROCKET_IMG = resource_path(os.path.join(img_folder, "rocket.png"))
 
 # CONTROLS
 PAUSE_KEY = pygame.K_p

@@ -1,7 +1,4 @@
 from BaseBoss import BaseBoss
-from BaseTurret import BaseTurret
-from cmd.config.config import (TURRET_PNG)
-import uuid
 
 
 class Corvette(BaseBoss):
@@ -23,5 +20,8 @@ class Corvette(BaseBoss):
             (524, 493),
             (162, 411),
             (162, 580),
+        ]
+
+        self.rocket_turret_coords = [
             (1304, 519),
         ]
