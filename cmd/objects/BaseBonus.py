@@ -12,7 +12,7 @@ class BaseBonus:
     """
     Базовый класс для бонусов - хранит состояние, координаты, угол, id и таймер
     """
-    def __init__(self, id, object_positions, img, screen, pos_x=0, pos_y=0):
+    def __init__(self, id, object_positions, img, screen, pos_x=0, pos_y=0, type='power'):
         self.id = id
         self.object_positions = object_positions
         self.img = img
@@ -23,7 +23,7 @@ class BaseBonus:
         self.screen = screen
         self.age = 0
         self.set_img(img)
-        self.type = 'power'
+        self.type = type
 
     def move(self,
              left=None,

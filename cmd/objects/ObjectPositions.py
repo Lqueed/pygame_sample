@@ -4,8 +4,6 @@ import math
 
 from cmd.helpers.ObjectHelper import rot_center, random_fn
 from cmd.objects.BaseSpaceship import BaseSpaceship
-from cmd.objects.BaseShot import BaseShot
-from cmd.objects.PowerShot import PowerShot
 from cmd.objects.BaseMob import BaseMob
 from cmd.objects.BigMob import BigMob
 from cmd.objects.SatteliteMob import SatteliteMob
@@ -28,7 +26,8 @@ from cmd.config.config import (
     SATTELITE_MOB_IMAGE,
     MINIMAP,
     STAR_DESTROYER_IMG,
-    CORVETTE_IMG
+    CORVETTE_IMG,
+    DOUBLE_BONUS_IMG
 )
 
 
@@ -150,29 +149,13 @@ class ObjectPositions:
         pos_x = self.player[0]
         pos_y = self.player[1]
         shot_id = str(uuid.uuid4())
-
-        if shot_type == 'power':
-            self.shots[shot_id] = PowerShot(
-                id=shot_id,
-                object_positions=self,
-                angle=angle,
-                pos_x=pos_x,
-                pos_y=pos_y,
-                screen=self.screen
-            )
-            self.shots[shot_id].draw_shot()
-            self.sounds.sound_shot()
-        elif shot_type == 'base':
-            self.shots[shot_id] = BaseShot(
-                id=shot_id,
-                object_positions=self,
-                angle=angle,
-                pos_x=pos_x,
-                pos_y=pos_y,
-                screen=self.screen
-            )
-            self.shots[shot_id].draw_shot()
-            self.sounds.sound_shot()
+        self.player_obj.shoot(
+            pos_x=pos_x,
+            pos_y=pos_y,
+            shot_id=shot_id,
+            angle=angle,
+            shot_type=shot_type
+        )
 
     def add_bomb(self, img):
         pos_x = self.player[0]
@@ -189,13 +172,22 @@ class ObjectPositions:
         )
         self.bombs[bomb_id].spawn()
 
-    def add_bonus(self, img, pos_x=None, pos_y=None):
+    def add_bonus(self, pos_x=None, pos_y=None):
         bonus_id = str(uuid.uuid4())
+        bonus_type = random.randint(0, 1)
+        if bonus_type:
+            bonus_type = 'power'
+            bonus_img = BONUS_IMG
+        else:
+            bonus_type = 'double'
+            bonus_img = DOUBLE_BONUS_IMG
+
         self.bonuses[bonus_id] = BaseBonus(
             id=bonus_id,
-            img=img,
+            img=bonus_img,
             screen=self.screen,
-            object_positions=self
+            object_positions=self,
+            type=bonus_type,
         )
         if pos_x and pos_y:
             self.bonuses[bonus_id].spawn_coords(pos_x, pos_y)
@@ -324,8 +316,7 @@ class ObjectPositions:
                     self.kill_count += 1
         for m_id in to_delete_mobs:
             if spawn_bonus:
-                self.add_bonus(img=BONUS_IMG,
-                               pos_x=self.mobs[m_id].pos_x,
+                self.add_bonus(pos_x=self.mobs[m_id].pos_x,
                                pos_y=self.mobs[m_id].pos_y)
                 spawn_bonus = False
             self.mobs.pop(m_id, None)
@@ -334,8 +325,7 @@ class ObjectPositions:
             to_delete = self.boss.destroy_timer()
             if spawn_bonus:
                 for turret_id in to_delete:
-                    self.add_bonus(img=BONUS_IMG,
-                                   pos_x=self.boss.turrets[turret_id].pos_x,
+                    self.add_bonus(pos_x=self.boss.turrets[turret_id].pos_x,
                                    pos_y=self.boss.turrets[turret_id].pos_y)
                     spawn_bonus = False
                     break
@@ -433,7 +423,7 @@ class ObjectPositions:
                     and (coords.pos_y <= self.player[1] + self.player_y_size and \
                          coords.pos_y >= self.player[1] - self.player_y_size):
                 collided.append(bonus_id)
-                self.set_player_shot_type(coords.type)
+                self.player_obj.set_bonus(coords.type)
         return collided
 
     def spawn_more_mobs_random(self):
@@ -444,7 +434,7 @@ class ObjectPositions:
     def spawn_bonus_random(self):
         if random.randint(0, SPAWN_RATE) == 0:
             for _ in range(1):
-                self.add_bonus(img=BONUS_IMG)
+                self.add_bonus()
 
     def del_too_far_objects(self):
         to_delete = []
@@ -462,9 +452,6 @@ class ObjectPositions:
 
     def get_player_shot_type(self):
         return self.player_obj.get_shot_type()
-
-    def set_player_shot_type(self, shot_type: str):
-        self.player_obj.set_shot_type(shot_type)
 
     def check_active_bonuses(self):
         self.player_obj.check_active_bonuses()

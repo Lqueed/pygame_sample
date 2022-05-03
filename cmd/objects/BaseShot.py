@@ -9,9 +9,18 @@ class BaseShot:
     """
     Базовый класс для выстрелов - хранит состояние, координаты, угол, скорость и id
     """
-    def __init__(self, id, object_positions, angle, pos_x, pos_y, screen, shot_speed=SHOT_SPEED):
+    def __init__(self,
+                 id,
+                 object_positions,
+                 angle,
+                 pos_x,
+                 pos_y,
+                 screen,
+                 shot_img=SHOT_IMG,
+                 shot_speed=SHOT_SPEED,
+                 power=False):
         self.id = id
-        self.img = None
+        self.img = shot_img
         self.object_positions = object_positions
         self.angle = angle
         self.pos_x = pos_x
@@ -19,8 +28,8 @@ class BaseShot:
         self.screen = screen
         self.speed = shot_speed
         self.age = 0
-        self.set_img(SHOT_IMG)
-        self.power = False
+        self.set_img(self.img)
+        self.power = power
 
     def set_img(self, img):
         self.img = pygame.image.load(img)
