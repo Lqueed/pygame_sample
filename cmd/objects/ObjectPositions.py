@@ -498,7 +498,7 @@ class ObjectPositions:
             dist_pl_boss = int(math.sqrt(
                 (self.boss.pos_x - self.player[0]) ** 2 + (self.boss.pos_y - self.player[1]) ** 2
             ))
-            if player_angle_rotate == self.player_obj.orientation and abs(dist_pl_boss) <= self.boss.height * 2:
+            if player_angle_rotate == self.player_obj.orientation and abs(dist_pl_boss) <= self.boss.height * 1.5:
                 self.boss_ready = True
 
         if self.boss_level:
