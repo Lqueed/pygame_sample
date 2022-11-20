@@ -1,5 +1,5 @@
 import sys
-from config.config import *
+from cmd.config.config import *
 import pygame
 
 # помощник для отрисовки разного рода надписей.

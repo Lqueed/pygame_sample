@@ -6,6 +6,7 @@ from cmd.config.config import (
 )
 import pygame
 import time
+from cmd.helpers.TextHelper import *
 
 
 class BaseStats:
@@ -42,7 +43,11 @@ class BaseStats:
     def draw_endgame(self):
         myfont = pygame.font.SysFont('Arial Bold', int(RES_Y / 5))
         text_surface = myfont.render('YOU FUCKED UP', False, (255, 255, 255))
+        myfont = pygame.font.SysFont('Arial Bold', int(RES_Y / 15))
         self.screen.blit(text_surface, (RES_X / 2 - int(RES_X / 3.2), RES_Y / 2 - int(RES_Y / 20)))
+        draw_text(self.screen,
+                  myfont,
+                  f'Score: {self.score}', (200, 200, 200), (RES_X / 2, RES_Y / 1.7 + int(RES_Y/15)), True)
 
     def draw_pause(self):
         myfont = pygame.font.SysFont('Arial Bold', int(RES_Y / 5))
