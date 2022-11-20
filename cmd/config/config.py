@@ -30,8 +30,9 @@ TURRET_SHOT_SPEED = 5
 ROCKET_TURRET_SHOOT_DELAY = 360
 ROCKET_SHOT_SPEED = 5
 SHOT_BONUS_TIME = 1800
-PLAYER_LIVES = 5
+PLAYER_LIVES = 2
 RESPAWN_DELAY = 120
+KILL_COUNT_FOR_BOSS = 1
 
 img_folder = "png"
 sounds_folder = "sounds"
@@ -53,6 +54,7 @@ CORVETTE_IMG = resource_path(os.path.join(img_folder, "corvette.png"))
 TURRET_PNG = resource_path(os.path.join(img_folder, "tur.png"))
 ROCKET_TURRET_PNG = resource_path(os.path.join(img_folder, "rocket_tur.png"))
 ROCKET_IMG = resource_path(os.path.join(img_folder, "rocket.png"))
+LIFE_BONUS_IMG = resource_path(os.path.join(img_folder, "lifebonus.png"))
 
 # CONTROLS
 PAUSE_KEY = pygame.K_p

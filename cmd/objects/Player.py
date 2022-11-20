@@ -95,6 +95,8 @@ class Player(BaseSpaceship):
             self.set_shot_type('power')
         elif bonus_type == 'double':
             self.set_shot_count(True)
+        elif bonus_type == 'life':
+            self.change_lives_count(degrease=False)
 
     def check_active_bonuses(self):
         to_delete = []

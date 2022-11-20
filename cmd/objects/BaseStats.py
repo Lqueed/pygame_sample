@@ -63,3 +63,8 @@ class BaseStats:
         myfont = pygame.font.SysFont('Arial Bold', int(RES_Y / 20))
         lives_surface = myfont.render(f'Lives: {int(self.lives)}', False, (255, 255, 255))
         self.screen.blit(lives_surface, (int(RES_X / 40) * 36, int(RES_Y / 40) * 38))
+
+    def draw_kill_count(self, kill_count: int = 0):
+        myfont = pygame.font.SysFont('Arial Bold', int(RES_Y / 20))
+        lives_surface = myfont.render(f'Kills left: {int(kill_count)}', False, (255, 255, 255))
+        self.screen.blit(lives_surface, (int(RES_X / 40) * 34.9, int(RES_Y / 40) * 36))

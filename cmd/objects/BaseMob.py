@@ -52,6 +52,7 @@ class BaseMob(BaseSpaceship):
 
         self.future_move_orientation = None
         self.group_move_angle = None
+        self.ghost = False
 
     def set_position(self, pos_x, pos_y):
         self.pos_x = pos_x
@@ -99,7 +100,10 @@ class BaseMob(BaseSpaceship):
             # таймер до полного удаления
             self.destroy_count += 1
         else:
-            if self.is_player_near():
+            if self.ghost:
+                self.move_from_player()
+
+            elif self.is_player_near():
                 self.move_to_player()
 
             elif self.sleep_frames_count:
@@ -154,6 +158,15 @@ class BaseMob(BaseSpaceship):
 
             self.random_moving_speed_direction = (left, right, up, down)
             self.random_moving = True
+
+    def move_from_player(self):
+        orientation = self.smooth_rotate_to_angle(180, self.orientation)
+
+        self.set_orientation(orientation)
+        left, right, up, down = self.calculate_move(self.speed)
+        self.move(left, right, up, down)
+        self.group_move_angle = None
+
 
     def move_to_player(self):
         if self.group_move_angle is not None:
@@ -216,3 +229,6 @@ class BaseMob(BaseSpaceship):
 
     def group_move(self, angle):
         self.group_move_angle = angle
+
+    def set_ghost(self, ghost: bool = True):
+        self.ghost = ghost

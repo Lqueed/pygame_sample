@@ -27,7 +27,9 @@ from cmd.config.config import (
     MINIMAP,
     STAR_DESTROYER_IMG,
     CORVETTE_IMG,
-    DOUBLE_BONUS_IMG
+    DOUBLE_BONUS_IMG,
+    LIFE_BONUS_IMG,
+    KILL_COUNT_FOR_BOSS
 )
 
 
@@ -187,13 +189,16 @@ class ObjectPositions:
 
     def add_bonus(self, pos_x=None, pos_y=None):
         bonus_id = str(uuid.uuid4())
-        bonus_type = random.randint(0, 1)
-        if bonus_type:
+        bonus_type = random.randint(0, 2)
+        if bonus_type == 0:
             bonus_type = 'power'
             bonus_img = BONUS_IMG
-        else:
+        elif bonus_type == 1:
             bonus_type = 'double'
             bonus_img = DOUBLE_BONUS_IMG
+        elif bonus_type == 2:
+            bonus_type = 'life'
+            bonus_img = LIFE_BONUS_IMG
 
         self.bonuses[bonus_id] = BaseBonus(
             id=bonus_id,
@@ -361,7 +366,8 @@ class ObjectPositions:
                 coords.pos_x >= self.player[0] - self.player_x_size) \
                 and (coords.pos_y <= self.player[1] + self.player_y_size and \
                      coords.pos_y >= self.player[1] - self.player_y_size) \
-                and not coords.is_destroyed:
+                and not coords.is_destroyed \
+                    and not coords.ghost:
                 collided.append(mob_id)
                 self.player_obj.destroy_player()
 
@@ -491,6 +497,9 @@ class ObjectPositions:
             self.mobs[mob_id].group_move(angle)
 
     def spawn_boss_level(self):
+        if self.boss_level and self.boss_ready:
+            self.set_mobs_ghost(False)
+
         if self.boss_level and not self.boss_ready:
             player_angle_rotate = BaseSpaceship.smooth_rotate_to_angle(0, orientation=self.player_obj.orientation)
             self.player_obj.set_orientation(player_angle_rotate)
@@ -515,11 +524,16 @@ class ObjectPositions:
                     self.boss = None
 
         if not self.boss_level:
-            if self.kill_count >= 10: # and not self.mobs:
+            if self.kill_count >= KILL_COUNT_FOR_BOSS: # and not self.mobs:
                 self.kill_count = 0
                 self.boss_level = True
                 boss = self.add_boss()
                 boss.spawn(spawn_coords=(self.player[0] - boss.width/2, self.player[1]-3000))
+                self.set_mobs_ghost()
+
+    def set_mobs_ghost(self, ghost: bool = True):
+        for mob_id, mob in self.mobs.items():
+            mob.ghost = ghost
 
     def draw_text(self):
         if self.boss_level and not self.boss_ready:
@@ -527,3 +541,6 @@ class ObjectPositions:
 
         if self.boss and self.boss.is_defeated:
             self.stats.draw_mobs_prepare()
+
+        if not self.boss_level:
+            self.stats.draw_kill_count(KILL_COUNT_FOR_BOSS - self.kill_count)
