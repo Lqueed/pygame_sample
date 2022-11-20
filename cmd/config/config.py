@@ -32,7 +32,7 @@ ROCKET_SHOT_SPEED = 5
 SHOT_BONUS_TIME = 1800
 PLAYER_LIVES = 2
 RESPAWN_DELAY = 120
-KILL_COUNT_FOR_BOSS = 1
+KILL_COUNT_FOR_BOSS = 10
 
 img_folder = "png"
 sounds_folder = "sounds"
