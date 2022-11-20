@@ -5,6 +5,7 @@ import json
 from cmd.config.config import *
 from cmd.helpers.TextHelper import draw_text
 from pygame.locals import *
+from pathlib import Path
 
 def resource_path(relative):
     if hasattr(sys, "_MEIPASS"):
@@ -24,6 +25,8 @@ class BaseMenu:
         self.clear_lb_coords = ()
         self.shown = True
         self.leaderboard_shown = False
+        self.save_score_coords = ()
+        self.back_menu_coords = ()
 
     def draw_menu(self):
         self.screen.fill(BLACK)
@@ -60,6 +63,16 @@ class BaseMenu:
             return self.quit_coords
         return None
 
+    def get_back_menu_coords(self):
+        if self.back_menu_coords:
+            return self.back_menu_coords
+        return None
+
+    def get_save_score_coords(self):
+        if self.save_score_coords:
+            return self.save_score_coords
+        return None
+
     def get_start_coords(self):
         if self.start_coords:
             return self.start_coords
@@ -84,10 +97,11 @@ class BaseMenu:
         font_size = int(RES_Y/15)
         menu_font = pygame.font.Font(resource_path(os.path.join('cmd/fonts', 'Rexagus.ttf')), font_size)
         try:
-            with open('leaderboard.json', 'r') as fp:
+            with open('leaderboard.json', 'r+') as fp:
                 leaderboard_json = json.load(fp)
         except FileNotFoundError:
             self.clear_leaderboard()
+            leaderboard_json = {}
 
         score_x_coord = RES_Y/3
         count_scored = 0
@@ -108,3 +122,16 @@ class BaseMenu:
         with open('leaderboard.json', 'w+') as fp:
             leaderboard_json = {}
             json.dump(leaderboard_json, fp)
+
+    def save_score(self, player_name: str, score: int):
+        if not Path("leaderboard.json").is_file():
+            self.clear_leaderboard()
+        with open('leaderboard.json', 'r+') as fp:
+            leaderboard_json = json.load(fp)
+            leaderboard_json[player_name] = score
+            fp.seek(0)
+            json.dump(leaderboard_json, fp)
+            fp.truncate()
+
+        self.shown = 1
+        self.leaderboard_shown = 1

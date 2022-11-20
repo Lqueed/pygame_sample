@@ -11,12 +11,27 @@ from cmd.helpers.TextHelper import *
 
 class BaseStats:
     def __init__(self,
-                 screen):
+                 screen,
+                 main_menu,
+                 key_helper):
         self.screen = screen
         self.score = 0
         self.time_spent = 0
         self.frame_count = 0
         self.lives = PLAYER_LIVES
+        self.name_input = None
+        self.main_menu = main_menu
+        self.key_helper = key_helper
+
+    def add_input_box(self):
+        from cmd.helpers.TextHelper import InputBox
+        self.name_input = InputBox(
+            RES_X/2 - 150,
+            100,
+            300,
+            40,
+            self.screen
+        )
 
     def increase_score(self, delta: int):
         self.score += delta
@@ -48,6 +63,27 @@ class BaseStats:
         draw_text(self.screen,
                   myfont,
                   f'Score: {self.score}', (200, 200, 200), (RES_X / 2, RES_Y / 1.7 + int(RES_Y/15)), True)
+
+        if not self.name_input:
+            self.add_input_box()
+        for event in pygame.event.get():
+            self.name_input.handle_event(event)
+        self.name_input.update()
+        self.name_input.draw()
+
+        font_size = int(RES_Y/15)
+        menu_font = pygame.font.Font(resource_path(os.path.join('cmd/fonts', 'Rexagus.ttf')), font_size)
+
+        # TODO: make active
+        self.main_menu.save_score_coords = draw_text(self.screen,
+            menu_font, "Save score", (200, 200, 200), (RES_X/2, RES_Y/1.7 + int(font_size * 4.5)), True)
+        self.main_menu.back_menu_coords = draw_text(self.screen,
+            menu_font, "Menu", (200, 200, 200), (RES_X/1.1, RES_Y/1.7 + int(font_size * 4.5)), True)
+
+        if self.key_helper.detect_save_score_press():
+            self.main_menu.save_score(self.name_input.text, self.score)
+
+
 
     def draw_pause(self):
         myfont = pygame.font.SysFont('Arial Bold', int(RES_Y / 5))

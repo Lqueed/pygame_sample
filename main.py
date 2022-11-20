@@ -45,9 +45,11 @@ bomb_delay = 0
 shot_img = pygame.image.load(SHOT_IMG)
 bomb_img = pygame.image.load(BOMB_IMG)
 
-main_stats = BaseStats(screen=screen)
 sound_helper = SoundHelper()
 
+main_menu = BaseMenu(screen=screen)
+key_helper = KeyHelper(main_menu=main_menu)
+main_stats = BaseStats(screen=screen, main_menu=main_menu, key_helper=key_helper)
 # основной класс-синглтон, который хранит координаты всех объектов и через который считаем взаимодействия
 object_positions = ObjectPositions(screen=screen, stats=main_stats, sounds=sound_helper)
 stats = object_positions.stats
@@ -66,9 +68,6 @@ object_positions.add_player(
 )
 
 clock = pygame.time.Clock()
-
-main_menu = BaseMenu(screen=screen)
-key_helper = KeyHelper(main_menu=main_menu)
 
 run = True
 pause_game = False

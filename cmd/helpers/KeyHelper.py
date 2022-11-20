@@ -65,6 +65,13 @@ class KeyHelper:
                 self.main_menu.clear_leaderboard()
                 return True
 
+    def detect_save_score_press(self):
+        if pygame.mouse.get_pressed()[0]:
+            btn_coords = self.main_menu.get_save_score_coords()
+            if KeyHelper.detect_menu_btn_press(btn_coords=btn_coords):
+                return True
+        return False
+
     # Класс помощник для работы с нажатиями на кнопки
     @staticmethod
     def detect_player_move(keys, speed: int = 10):
