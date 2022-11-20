@@ -55,6 +55,7 @@ TURRET_PNG = resource_path(os.path.join(img_folder, "tur.png"))
 ROCKET_TURRET_PNG = resource_path(os.path.join(img_folder, "rocket_tur.png"))
 ROCKET_IMG = resource_path(os.path.join(img_folder, "rocket.png"))
 LIFE_BONUS_IMG = resource_path(os.path.join(img_folder, "lifebonus.png"))
+MOUSE_ARROW_IMG = resource_path(os.path.join(img_folder, "mouse_arrow.png"))
 
 # CONTROLS
 PAUSE_KEY = pygame.K_p

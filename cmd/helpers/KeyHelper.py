@@ -7,12 +7,63 @@ from cmd.config.config import (
 )
 
 class KeyHelper:
-    def __init__(self):
+    def __init__(self, main_menu):
+        self.main_menu = main_menu
         self.key_press_delay = 0
         self.pause_key = PAUSE_KEY
         self.shoot_key = SHOOT_KEY_MAIN
         self.free_flight = FREE_FLIGHT_KEY
         self.bomb_key = BOMB_KEY
+
+    @staticmethod
+    def detect_menu_btn_press(btn_coords):
+        mouse = pygame.mouse.get_pos()
+        if not btn_coords:
+            return False
+        if (btn_coords[0] <= mouse[0] <= btn_coords[0] + btn_coords[2]) and \
+                btn_coords[1] <= mouse[1] <= btn_coords[1] + btn_coords[3]:
+            return True
+        return False
+
+    def detect_clear_lb_press(self):
+        if pygame.mouse.get_pressed()[0] and self.main_menu.shown:
+            btn_coords = self.main_menu.get_clear_lb_coords()
+            if KeyHelper.detect_menu_btn_press(btn_coords=btn_coords):
+                self.main_menu.clear_leaderboard()
+
+    def detect_quit_press(self):
+        if pygame.mouse.get_pressed()[0] and self.main_menu.shown:
+            btn_coords = self.main_menu.get_quit_coords()
+            return KeyHelper.detect_menu_btn_press(btn_coords=btn_coords)
+
+    # нажатие кнопки Старт в меню - по координатам
+    def detect_start_press(self):
+        if pygame.mouse.get_pressed()[0] and self.main_menu.shown:
+            btn_coords = self.main_menu.get_start_coords()
+            if KeyHelper.detect_menu_btn_press(btn_coords=btn_coords):
+                self.main_menu.show_hide_menu()
+                return True
+
+    def detect_leaderboard_press(self):
+        if pygame.mouse.get_pressed()[0] and self.main_menu.shown:
+            btn_coords = self.main_menu.get_leaderboard_coords()
+            if KeyHelper.detect_menu_btn_press(btn_coords=btn_coords):
+                self.main_menu.leaderboard_shown = 1
+                return True
+
+    def detect_back_press(self):
+        if pygame.mouse.get_pressed()[0] and self.main_menu.shown and self.main_menu.leaderboard_shown:
+            btn_coords = self.main_menu.get_back_coords()
+            if KeyHelper.detect_menu_btn_press(btn_coords=btn_coords):
+                self.main_menu.leaderboard_shown = 0
+                return True
+
+    def detect_clear_press(self):
+        if pygame.mouse.get_pressed()[0] and self.main_menu.shown and self.main_menu.leaderboard_shown:
+            btn_coords = self.main_menu.get_clear_lb_coords()
+            if KeyHelper.detect_menu_btn_press(btn_coords=btn_coords):
+                self.main_menu.clear_leaderboard()
+                return True
 
     # Класс помощник для работы с нажатиями на кнопки
     @staticmethod

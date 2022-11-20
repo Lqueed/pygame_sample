@@ -3,6 +3,7 @@ from cmd.objects.BaseStats import BaseStats
 from cmd.objects.Player import Player
 from cmd.objects.ObjectPositions import ObjectPositions
 from cmd.background.TileBackground import TileBackground
+from cmd.objects.BaseMenu import BaseMenu
 from cmd.helpers.KeyHelper import KeyHelper
 from cmd.helpers.SoundHelper import SoundHelper
 from cmd.config.config import (
@@ -17,6 +18,7 @@ from cmd.config.config import (
     GAME_SPEED_FPS,
     BOMB_IMG,
     RESPAWN_DELAY,
+    MOUSE_ARROW_IMG
 )
 
 """
@@ -44,7 +46,6 @@ shot_img = pygame.image.load(SHOT_IMG)
 bomb_img = pygame.image.load(BOMB_IMG)
 
 main_stats = BaseStats(screen=screen)
-key_helper = KeyHelper()
 sound_helper = SoundHelper()
 
 # основной класс-синглтон, который хранит координаты всех объектов и через который считаем взаимодействия
@@ -66,10 +67,14 @@ object_positions.add_player(
 
 clock = pygame.time.Clock()
 
+main_menu = BaseMenu(screen=screen)
+key_helper = KeyHelper(main_menu=main_menu)
+
 run = True
 pause_game = False
 end_game = False
 wait_timer = 0
+main_menu.shown = True
 
 while run:
     clock.tick(GAME_SPEED_FPS)
@@ -82,6 +87,23 @@ while run:
 
     if key_helper.detect_esc(keys):
         run = False
+
+    if main_menu.shown:
+        main_menu.draw_menu()
+        if key_helper.detect_quit_press():
+            run = False
+        key_helper.detect_start_press()
+        key_helper.detect_leaderboard_press()
+        key_helper.detect_back_press()
+        key_helper.detect_clear_lb_press()
+        stats.increase_time()
+        pygame.display.update()
+        continue
+        # if pygame.mouse.get_focused():
+        #     pygame.mouse.set_visible(False)
+        #     mouse_arrow = pygame.image.load(MOUSE_ARROW_IMG)
+        #     screen.blit(mouse_arrow, pygame.mouse.get_pos())
+        #     continue
 
     if end_game:
         bg.draw()
