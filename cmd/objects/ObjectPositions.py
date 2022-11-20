@@ -142,6 +142,19 @@ class ObjectPositions:
             spawn_coords=spawn_coords,
         )
 
+    def clear_mobs(self):
+        self.mobs = {}
+
+    def clear_shots(self):
+        self.shots = {}
+        self.enemy_shots = {}
+
+    def clear_all(self):
+        self.clear_shots()
+        self.clear_mobs()
+        self.bombs = {}
+        self.bonuses = {}
+
     def add_player(self, player):
         self.player_obj = player
 

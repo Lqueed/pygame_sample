@@ -1,7 +1,8 @@
 from cmd.config.config import (
     RES_X,
     RES_Y,
-    GAME_SPEED_FPS
+    GAME_SPEED_FPS,
+    PLAYER_LIVES
 )
 import pygame
 import time
@@ -14,7 +15,7 @@ class BaseStats:
         self.score = 0
         self.time_spent = 0
         self.frame_count = 0
-        self.lives = 1
+        self.lives = PLAYER_LIVES
 
     def increase_score(self, delta: int):
         self.score += delta
@@ -36,6 +37,7 @@ class BaseStats:
             time_str = f'Time: {time.strftime("%M:%S", time.gmtime(int(self.time_spent)))}'
         time_surface = myfont.render(time_str, False, (255, 255, 255))
         self.screen.blit(time_surface, (int(RES_X / 40), int(RES_Y / 40) + int(RES_Y / 40) + int(RES_Y / 40)/2))
+        self.draw_lives()
 
     def draw_endgame(self):
         myfont = pygame.font.SysFont('Arial Bold', int(RES_Y / 5))
@@ -56,3 +58,8 @@ class BaseStats:
         myfont = pygame.font.SysFont('Arial Bold', int(RES_Y / 6))
         text_surface = myfont.render('FIGHTERS INCOMING', False, (255, 255, 255))
         self.screen.blit(text_surface, (RES_X / 2 - int(RES_X / 3), RES_Y / 2 - int(RES_Y / 20)))
+
+    def draw_lives(self):
+        myfont = pygame.font.SysFont('Arial Bold', int(RES_Y / 20))
+        lives_surface = myfont.render(f'Lives: {int(self.lives)}', False, (255, 255, 255))
+        self.screen.blit(lives_surface, (int(RES_X / 40) * 36, int(RES_Y / 40) * 38))

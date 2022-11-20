@@ -16,6 +16,7 @@ from cmd.config.config import (
     BASE_PLAYER_IMG,
     GAME_SPEED_FPS,
     BOMB_IMG,
+    RESPAWN_DELAY,
 )
 
 """
@@ -68,6 +69,7 @@ clock = pygame.time.Clock()
 run = True
 pause_game = False
 end_game = False
+wait_timer = 0
 
 while run:
     clock.tick(GAME_SPEED_FPS)
@@ -153,8 +155,13 @@ while run:
     # отрисовываем игрока и мобов
     object_positions.draw_all()
 
-    if object_positions.player_obj.destroyed:
+    if object_positions.player_obj.destroyed and object_positions.player_obj.get_lives_count() == 0:
         end_game = True
+    elif object_positions.player_obj.destroyed and object_positions.player_obj.get_lives_count() > 0:
+        wait_timer += 1
+        if wait_timer >= RESPAWN_DELAY:
+            object_positions.player_obj.respawn()
+            wait_timer = 0
 
     stats.increase_time()
     pygame.display.update()

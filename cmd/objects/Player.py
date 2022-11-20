@@ -9,7 +9,8 @@ from cmd.config.config import (
     POWER_SHOT_SPEED,
     POWER_SHOT_IMG,
     SHOT_SPEED,
-    SHOT_IMG
+    SHOT_IMG,
+    PLAYER_LIVES
 )
 import pygame
 import math
@@ -21,11 +22,51 @@ class Player(BaseSpaceship):
     """
     def __init__(self, screen, object_positions, img):
         super().__init__(screen, object_positions, img)
+        self.base_img = img
+        self.destroyed = False
+        self.shot_type = 'base'
+        self.double_shot = False
+        self.active_bonuses = {}
+        self.spawn()
+
+    def spawn(self):
         self.object_positions.set_position('player', RES_X/2, RES_Y/2)
         self.destroyed = False
         self.shot_type = 'base'
         self.double_shot = False
         self.active_bonuses = {}
+        self.img = pygame.image.load(self.base_img)
+        self.orientation = 0
+        self.prev_direction = (0, 0, 0, 0)
+
+    def respawn(self):
+        self.change_lives_count()
+        self.object_positions.clear_mobs()
+        self.spawn()
+        if self.object_positions.boss:
+            boss = self.object_positions.boss
+            target_move_x = self.object_positions.player[0] - boss.width/2
+            boss_move_x = target_move_x - boss.pos_x
+            if boss_move_x >= 0:
+                left = abs(boss_move_x)
+                right = 0
+            else:
+                left = 0
+                right = abs(boss_move_x)
+            boss_move_y = (RES_Y + boss.pos_y) + RES_Y * 2
+            self.object_positions.boss.move(left, right, 0, boss_move_y)
+            self.object_positions.clear_all()
+        else:
+            self.object_positions.clear_all()
+
+    def get_lives_count(self) -> int:
+        return self.object_positions.stats.lives
+
+    def change_lives_count(self, degrease: bool = True):
+        if degrease:
+            self.object_positions.stats.lives -= 1
+        else:
+            self.object_positions.stats.lives += 1
 
     def draw(self):
         player_image, new_rect = rot_center(self.img,
